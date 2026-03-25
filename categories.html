@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catégories de Produits - VotreMarché</title>
+
+    <!-- Meta SEO -->
+    <meta name="description" content="Explorez toutes les catégories de produits disponibles sur VotreMarché, du Congo-Brazzaville.">
+    <meta name="theme-color" content="#4F46E5">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Catégories - VotreMarché">
+    <meta property="og:description" content="Découvrez toutes les catégories de produits sur VotreMarché.">
+    <meta property="og:image" content="src/img/logo.jpg">
+    <meta property="og:type" content="website">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="src/img/logo.jpg">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'vm-primary': '#4a634e',
+                        'vm-accent': '#f2c335',
+                        'vm-centre': '#304870',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0f172a;
+            background-image: radial-gradient(circle at 1px 1px, #334155 1px, transparent 0);
+            background-size: 20px 20px;
+        }
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #4F46E5;
+            color: white;
+            padding: 8px;
+            z-index: 100;
+            transition: top 0.3s;
+        }
+        .skip-link:focus { top: 0; }
+    </style>
+</head>
+<body class="bg-slate-900 text-white font-sans leading-normal tracking-normal">
+
+<a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+<!-- HEADER -->
+<header class="w-full sticky top-0 bg-slate-800/80 backdrop-blur-md z-50 shadow-md">
+    <div class="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
+        <a href="index.html" class="flex items-center gap-2">
+            <img src="src/img/logo.jpg" alt="Logo VotreMarché" class="h-12 w-12 rounded-full">
+            <span class="font-bold text-xl">VotreMarché</span>
+        </a>
+        <nav class="hidden md:flex gap-6 text-slate-300">
+            <a href="categories.html" class="text-vm-accent font-semibold">Catégories</a>
+            <a href="vendre.html" class="hover:text-vm-accent">Vendre</a>
+            <a href="aide.html" class="hover:text-vm-accent">Aide</a>
+        </nav>
+        <div class="flex items-center gap-4">
+            <a href="connexion.html" class="px-4 py-1 border rounded-lg hover:bg-slate-700">Se connecter</a>
+            <a href="inscription.html" class="px-4 py-1 bg-vm-accent text-black rounded-lg hover:scale-105 transition">S'inscrire</a>
+            <a href="panier.html" class="relative">
+                <i class="fas fa-shopping-cart text-xl"></i>
+                <span class="absolute -top-2 -right-2 bg-vm-accent text-black text-xs font-bold px-2 rounded-full">0</span>
+            </a>
+        </div>
+    </div>
+</header>
+
+<!-- MAIN -->
+<main id="main-content" class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+
+    <!-- Hero -->
+    <section class="text-center mb-12">
+        <h1 class="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">
+            Toutes les Catégories
+        </h1>
+        <p class="mt-4 text-lg text-slate-400">
+            Découvrez notre large sélection de produits classés par catégories pour faciliter votre shopping.
+        </p>
+    </section>
+
+    <!-- Catégories -->
+    <section>
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+            <!-- Alimentation -->
+            <div class="bg-slate-800/50 rounded-lg p-6 shadow-md">
+                <h2 class="text-2xl font-semibold mb-4">
+                    <a href="liste-produits.html?cat=alimentation" class="hover:text-vm-accent">
+                        Alimentation & Boissons
+                    </a>
+                </h2>
+                <ul class="space-y-3 text-slate-300">
+                    <li>
+                        <a href="liste-produits.html?cat=fruits-legumes" class="flex items-center gap-2 hover:text-vm-accent">
+                            <i class="fas fa-apple-alt text-vm-accent"></i> Fruits & Légumes
+                        </a>
+                    </li>
+                    <li>
+                        <a href="liste-produits.html?cat=viandes-poissons" class="flex items-center gap-2 hover:text-vm-accent">
+                            <i class="fas fa-fish text-vm-accent"></i> Viandes & Poissons
+                        </a>
+                    </li>
+                    <li>
+                        <a href="liste-produits.html?cat=epicerie" class="flex items-center gap-2 hover:text-vm-accent">
+                            <i class="fas fa-shopping-basket text-vm-accent"></i> Épicerie
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Mode -->
+            <div class="bg-slate-800/50 rounded-lg p-6 shadow-md">
+                <h2 class="text-2xl font-semibold mb-4">
+                    <a href="liste-produits.html?cat=mode" class="hover:text-vm-accent">
+                        Mode & Vêtements
+                    </a>
+                </h2>
+                <ul class="space-y-3 text-slate-300">
+                    <li>
+                        <a href="liste-produits.html?cat=hommes" class="flex items-center gap-2 hover:text-vm-accent">
+                            <i class="fas fa-male text-vm-accent"></i> Hommes
+                        </a>
+                    </li>
+                    <li>
+                        <a href="liste-produits.html?cat=femmes" class="flex items-center gap-2 hover:text-vm-accent">
+                            <i class="fas fa-female text-vm-accent"></i> Femmes
+                        </a>
+                    </li>
+                    <li>
+                        <a href="liste-produits.html?cat=enfants" class="flex items-center gap-2 hover:text-vm-accent">
+                            <i class="fas fa-child text-vm-accent"></i> Enfants
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Électronique -->
+            <div class="bg-slate-800/50 rounded-lg p-6 shadow-md">
+                <h2 class="text-2xl font-semibold mb-4">
+                    <a href="liste-produits.html?cat=electronique" class="hover:text-vm-accent">
+                        Électronique
+                    </a>
+                </h2>
+                <ul class="space-y-3 text-slate-300">
+                    <li>
+                        <a href="liste-produits.html?cat=smartphones" class="flex items-center gap-2 hover:text-vm-accent">
+                            <i class="fas fa-mobile-alt text-vm-accent"></i> Smartphones
+                        </a>
+                    </li>
+                    <li>
+                        <a href="liste-produits.html?cat=ordinateurs" class="flex items-center gap-2 hover:text-vm-accent">
+                            <i class="fas fa-laptop text-vm-accent"></i> Ordinateurs
+                        </a>
+                    </li>
+                    <li>
+                        <a href="liste-produits.html?cat=televisions" class="flex items-center gap-2 hover:text-vm-accent">
+                            <i class="fas fa-tv text-vm-accent"></i> Télévisions
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Maison -->
+            <div class="bg-slate-800/50 rounded-lg p-6 shadow-md">
+                <h2 class="text-2xl font-semibold mb-4">
+                    <a href="liste-produits.html?cat=maison" class="hover:text-vm-accent">
+                        Maison & Jardin
+                    </a>
+                </h2>
+                <ul class="space-y-3 text-slate-300">
+                    <li>
+                        <a href="liste-produits.html?cat=meubles" class="flex items-center gap-2 hover:text-vm-accent">
+                            <i class="fas fa-couch text-vm-accent"></i> Meubles
+                        </a>
+                    </li>
+                    <li>
+                        <a href="liste-produits.html?cat=decorations" class="flex items-center gap-2 hover:text-vm-accent">
+                            <i class="fas fa-paint-brush text-vm-accent"></i> Décorations
+                        </a>
+                    </li>
+                    <li>
+                        <a href="liste-produits.html?cat=outils" class="flex items-center gap-2 hover:text-vm-accent">
+                            <i class="fas fa-tools text-vm-accent"></i> Outils de jardin
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </section>
+</main>
+
+<!-- FOOTER -->
+<footer class="mt-16 bg-slate-800/70 backdrop-blur-md text-slate-400 text-sm">
+    <div class="max-w-6xl mx-auto px-4 py-8 grid md:grid-cols-4 gap-8">
+        <div>
+            <h4 class="font-bold text-white mb-3">VotreMarché</h4>
+            <ul class="space-y-2">
+                <li><a href="a-propos.html" class="hover:text-white">À propos de nous</a></li>
+                <li><a href="vendre.html" class="hover:text-white">Devenir Vendeur</a></li>
+                <li><a href="faq.html" class="hover:text-white">FAQ</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="font-bold text-white mb-3">Aide & Support</h4>
+            <ul class="space-y-2">
+                <li><a href="contact.html" class="hover:text-white">Nous contacter</a></li>
+                <li><a href="conditions.html" class="hover:text-white">Conditions générales</a></li>
+                <li><a href="confidentialite.html" class="hover:text-white">Politique de confidentialité</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="font-bold text-white mb-3">Moyens de Paiement</h4>
+            <div class="flex gap-4 items-center">
+                <img src="src/img/airtel.png" alt="Airtel" class="h-8">
+                <img src="src/img/mtn.png" alt="MTN" class="h-8">
+                <img src="src/img/visa.png" alt="Visa" class="h-6">
+            </div>
+        </div>
+        <div>
+            <h4 class="font-bold text-white mb-3">Suivez-nous</h4>
+            <div class="flex gap-4 mb-4">
+                <a href="#" class="hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="hover:text-white"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="hover:text-white"><i class="fab fa-twitter"></i></a>
+            </div>
+            <form class="flex">
+                <input type="email" placeholder="Votre email" class="flex-grow px-3 py-2 rounded-l-lg bg-slate-700 text-white" />
+                <button type="submit" class="bg-vm-accent text-black px-4 rounded-r-lg"><i class="fas fa-paper-plane"></i></button>
+            </form>
+        </div>
+    </div>
+    <div class="text-center py-4 border-t border-slate-700">
+        © 2025 VotreMarché. Tous droits réservés.
+    </div>
+</footer>
+
+<script src="js/script.js"></script>
+</body>
+</html>

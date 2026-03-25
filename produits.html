@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nom du Produit - VotreMarché</title>
+    <meta name="description" content="Achetez [Nom du Produit] sur VotreMarché. Détails, avis, et options de livraison au Congo-Brazzaville.">
+    <link rel="stylesheet" href="css/fonts.css">
+    <link rel="stylesheet" href="css/modern-style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" type="image/png" href="src/img/logo.jpg">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">
+        Aller au contenu principal
+    </a>
+
+    <!-- Header avec effet de flou au défilement -->
+    <header class="sticky-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <a href="index.html" class="logo-link" aria-label="Accueil VotreMarché">
+                        <img src="src/img/logo.jpg" alt="Logo VotreMarché" class="logo-image" loading="eager" width="80" height="80">
+                    </a>
+                    <nav class="main-nav" role="navigation" aria-label="Navigation principale">
+                        <a href="categories.html" class="nav-link">Catégories</a>
+                        <a href="vendre.html" class="nav-link">Vendre sur VotreMarché</a>
+                        <a href="aide.html" class="nav-link">Aide</a>
+                    </nav>
+                </div>
+
+                <div class="header-actions">
+                    <div class="search-container">
+                        <input type="search" 
+                               placeholder="Rechercher..." 
+                               class="search-input"
+                               aria-label="Rechercher">
+                        <i class="fas fa-search search-icon"></i>
+                    </div>
+                    <a href="connexion.html" class="btn btn-outline">
+                        Se connecter
+                    </a>
+                    <a href="inscription.html" class="btn btn-primary">
+                        S'inscrire
+                    </a>
+                    <a href="panier.html" class="cart-link" aria-label="Panier">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-badge" aria-live="polite">0</span>
+                    </a>
+                </div>
+
+                <!-- Menu mobile -->
+                <button class="mobile-menu-toggle" aria-expanded="false" aria-controls="mobile-menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Menu mobile -->
+    <div id="mobile-menu" class="mobile-menu">
+        <div class="mobile-menu-content">
+            <a href="categories.html" class="mobile-nav-link">Catégories</a>
+            <a href="vendre.html" class="mobile-nav-link">Vendre sur VotreMarché</a>
+            <a href="aide.html" class="mobile-nav-link">Aide</a>
+        </div>
+    </div>
+
+    <main id="main-content" class="product-main">
+        <div class="container">
+            <!-- Détails du produit -->
+            <div class="product-grid">
+                <!-- Images du produit -->
+                <div class="product-images">
+                    <div class="product-main-image">
+                        <img src="src/img/logo.jpg" style="opacity:0.3;" 
+                             alt="Image principale du produit" 
+                             class="main-product-image">
+                    </div>
+                    <div class="product-thumbnails">
+                        <button class="product-thumbnail active">
+                            <img src="src/img/logo.jpg" style="opacity:0.3;" 
+                                 alt="Miniature 1" 
+                                 class="thumbnail-image">
+                        </button>
+                        <button class="product-thumbnail">
+                            <img src="src/img/logo.jpg" style="opacity:0.3;" 
+                                 alt="Miniature 2" 
+                                 class="thumbnail-image">
+                        </button>
+                        <button class="product-thumbnail">
+                            <img src="src/img/logo.jpg" style="opacity:0.3;" 
+                                 alt="Miniature 3" 
+                                 class="thumbnail-image">
+                        </button>
+                        <button class="product-thumbnail">
+                            <img src="src/img/logo.jpg" style="opacity:0.3;" 
+                                 alt="Miniature 4" 
+                                 class="thumbnail-image">
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Informations du produit -->
+                <div class="product-info">
+                    <nav class="breadcrumb">
+                        <a href="index.html" class="breadcrumb-link">Accueil</a>
+                        <span class="breadcrumb-separator">/</span>
+                        <a href="categories.html" class="breadcrumb-link">Catégories</a>
+                        <span class="breadcrumb-separator">/</span>
+                        <a href="liste-produits.html?cat=electronique" class="breadcrumb-link">Électronique</a>
+                        <span class="breadcrumb-separator">/</span>
+                        <span class="breadcrumb-current">Nom du Produit</span>
+                    </nav>
+
+                    <h1 class="product-title">Nom du Produit</h1>
+                    
+                    <div class="product-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                        <span class="rating-text">4.0 (128 avis)</span>
+                    </div>
+
+                    <div class="product-price">
+                        <span class="current-price">25 000 FCFA</span>
+                        <span class="original-price">30 000 FCFA</span>
+                        <span class="discount-badge">-17%</span>
+                    </div>
+
+                    <div class="product-description">
+                        <p>Description détaillée du produit avec toutes ses caractéristiques, avantages et utilisations possibles. Ce produit de qualité supérieure offre une excellente valeur pour votre argent.</p>
+                    </div>
+
+                    <div class="product-options">
+                        <div class="option-group">
+                            <label class="option-label">Couleur :</label>
+                            <div class="color-options">
+                                <button class="color-option active" data-color="noir">
+                                    <span class="color-swatch" style="background-color: #000;"></span>
+                                    <span class="color-name">Noir</span>
+                                </button>
+                                <button class="color-option" data-color="blanc">
+                                    <span class="color-swatch" style="background-color: #fff; border: 1px solid #ddd;"></span>
+                                    <span class="color-name">Blanc</span>
+                                </button>
+                                <button class="color-option" data-color="rouge">
+                                    <span class="color-swatch" style="background-color: #ff0000;"></span>
+                                    <span class="color-name">Rouge</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="option-group">
+                            <label class="option-label">Taille :</label>
+                            <div class="size-options">
+                                <button class="size-option">S</button>
+                                <button class="size-option active">M</button>
+                                <button class="size-option">L</button>
+                                <button class="size-option">XL</button>
+                            </div>
+                        </div>
+
+                        <div class="option-group">
+                            <label for="quantity" class="option-label">Quantité :</label>
+                            <div class="quantity-selector">
+                                <button class="quantity-btn" data-action="decrease">-</button>
+                                <input type="number" id="quantity" value="1" min="1" class="quantity-input">
+                                <button class="quantity-btn" data-action="increase">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-actions">
+                        <button class="btn btn-primary btn-large add-to-cart-btn">
+                            <i class="fas fa-shopping-cart"></i>
+                            Ajouter au panier
+                        </button>
+                        <button class="btn btn-outline btn-large buy-now-btn">
+                            Acheter maintenant
+                        </button>
+                    </div>
+
+                    <div class="product-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-truck"></i>
+                            <span>Livraison gratuite</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Garantie 1 an</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-undo"></i>
+                            <span>Retour sous 30 jours</span>
+                        </div>
+                    </div>
+
+                    <div class="vendor-info">
+                        <h3 class="vendor-title">Vendu par</h3>
+                        <div class="vendor-card">
+                            <img src="src/img/logo.jpg" alt="Avatar vendeur" class="vendor-avatar">
+                            <div class="vendor-details">
+                                <h4 class="vendor-name">Nom du Vendeur</h4>
+                                <div class="vendor-rating">
+                                    <div class="stars">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <span class="vendor-rating-text">4.8 (2,456 avis)</span>
+                                </div>
+                                <a href="vendeur.html?id=vendor123" class="btn btn-outline btn-sm">
+                                    Voir la boutique
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Onglets de détails -->
+            <div class="product-tabs">
+                <div class="tab-buttons">
+                    <button class="tab-button active" data-tab="description">Description</button>
+                    <button class="tab-button" data-tab="specifications">Spécifications</button>
+                    <button class="tab-button" data-tab="reviews">Avis (128)</button>
+                    <button class="tab-button" data-tab="shipping">Livraison</button>
+                </div>
+
+                <div class="tab-content">
+                    <div id="description" class="tab-panel active">
+                        <h3>Description du produit</h3>
+                        <p>Description détaillée et complète du produit avec toutes ses caractéristiques, avantages et utilisations possibles.</p>
+                        <ul>
+                            <li>Caractéristique 1</li>
+                            <li>Caractéristique 2</li>
+                            <li>Caractéristique 3</li>
+                        </ul>
+                    </div>
+
+                    <div id="specifications" class="tab-panel">
+                        <h3>Spécifications techniques</h3>
+                        <table class="specs-table">
+                            <tr>
+                                <td class="spec-label">Marque</td>
+                                <td class="spec-value">Nom de la marque</td>
+                            </tr>
+                            <tr>
+                                <td class="spec-label">Modèle</td>
+                                <td class="spec-value">XYZ-123</td>
+                            </tr>
+                            <tr>
+                                <td class="spec-label">Poids</td>
+                                <td class="spec-value">500g</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div id="reviews" class="tab-panel">
+                        <h3>Avis clients</h3>
+                        <div class="review-summary">
+                            <div class="overall-rating">
+                                <div class="rating-number">4.0</div>
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                                <div class="total-reviews">Basé sur 128 avis</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="shipping" class="tab-panel">
+                        <h3>Options de livraison</h3>
+                        <div class="shipping-options">
+                            <div class="shipping-option">
+                                <div class="shipping-info">
+                                    <h4>Livraison standard</h4>
+                                    <p>Livraison en 3-5 jours ouvrables</p>
+                                </div>
+                                <div class="shipping-price">Gratuit</div>
+                            </div>
+                            <div class="shipping-option">
+                                <div class="shipping-info">
+                                    <h4>Livraison express</h4>
+                                    <p>Livraison en 1-2 jours ouvrables</p>
+                                </div>
+                                <div class="shipping-price">2 500 FCFA</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Produits similaires -->
+            <section class="similar-products">
+                <h2 class="section-title">Produits similaires</h2>
+                <div class="products-grid">
+                    <div class="product-card">
+                        <img src="src/img/logo.jpg" style="opacity:0.3;" alt="Produit similaire" class="product-card-image">
+                        <div class="product-card-content">
+                            <h3 class="product-card-title">Produit Similaire 1</h3>
+                            <div class="product-card-price">20 000 FCFA</div>
+                            <button class="btn btn-primary btn-sm">Ajouter au panier</button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <img src="src/img/logo.jpg" style="opacity:0.3;" alt="Produit similaire" class="product-card-image">
+                        <div class="product-card-content">
+                            <h3 class="product-card-title">Produit Similaire 2</h3>
+                            <div class="product-card-price">18 000 FCFA</div>
+                            <button class="btn btn-primary btn-sm">Ajouter au panier</button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <img src="src/img/logo.jpg" style="opacity:0.3;" alt="Produit similaire" class="product-card-image">
+                        <div class="product-card-content">
+                            <h3 class="product-card-title">Produit Similaire 3</h3>
+                            <div class="product-card-price">22 000 FCFA</div>
+                            <button class="btn btn-primary btn-sm">Ajouter au panier</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h4 class="footer-title">VotreMarché</h4>
+                    <ul class="footer-links">
+                        <li><a href="a-propos.html" class="footer-link">À propos de nous</a></li>
+                        <li><a href="vendre.html" class="footer-link">Devenir Vendeur</a></li>
+                        <li><a href="faq.html" class="footer-link">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Aide & Support</h4>
+                    <ul class="footer-links">
+                        <li><a href="contact.html" class="footer-link">Nous contacter</a></li>
+                        <li><a href="conditions.html" class="footer-link">Conditions générales</a></li>
+                        <li><a href="confidentialite.html" class="footer-link">Politique de confidentialité</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Moyens de Paiement</h4>
+                    <div class="payment-methods">
+                        <img src="src/img/airtel.png" alt="Airtel Money" class="payment-icon">
+                        <img src="src/img/mtn.png" alt="MTN Mobile Money" class="payment-icon">
+                        <img src="src/img/visa.png" alt="Visa" class="payment-icon">
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Suivez-nous</h4>
+                    <div class="social-links">
+                        <a href="#" class="social-link" aria-label="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    </div>
+                    <div class="newsletter-section">
+                        <h5 class="newsletter-title">Newsletter</h5>
+                        <form class="newsletter-form">
+                            <input type="email" 
+                                   placeholder="Votre email" 
+                                   class="newsletter-input"
+                                   aria-label="Adresse email pour la newsletter">
+                            <button type="submit" 
+                                    class="newsletter-button"
+                                    aria-label="S'inscrire à la newsletter">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 VotreMarché. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finaliser la Commande - VotreMarché</title>
+    <meta name="description" content="Choisissez votre mode de livraison et de paiement pour finaliser votre commande sur VotreMarché.">
+    <link rel="stylesheet" href="css/modern-style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" type="image/png" href="src/img/logo.jpg">
+</head>
+<body>
+
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <a href="index.html"><img src="src/img/logo.jpg" alt="Logo VotreMarché" class="logo-text" loading="eager" width="80" height="80"></a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="categories.html">Catégories</a></li>
+                    <li><a href="vendre.html">Vendre sur VotreMarché</a></li>
+                    <li><a href="aide.html">Aide</a></li>
+                </ul>
+            </nav>
+            <div class="user-actions">
+                <a href="connexion.html" class="btn btn-secondary">Se connecter</a>
+                <a href="inscription.html" class="btn btn-primary">S'inscrire</a>
+                <a href="panier.html" class="cart-icon active"><i class="fas fa-shopping-cart"></i> <span class="cart-count">3</span></a>
+            </div>
+            <div class="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+        <div class="search-bar-container">
+            <div class="container">
+                <input type="text" placeholder="Rechercher un produit, un vendeur..." class="search-input">
+                <button type="submit" class="search-button"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="page-title">
+            <div class="container">
+                <h2>Finaliser votre Commande</h2>
+            </div>
+        </section>
+
+        <section class="checkout-section">
+            <div class="container checkout-layout">
+                <div class="checkout-steps">
+                    <div class="step active">1. Adresse de livraison</div>
+                    <div class="step">2. Mode de livraison</div>
+                    <div class="step">3. Paiement</div>
+                    <div class="step">4. Récapitulatif</div>
+                </div>
+
+                <form class="checkout-form">
+                    <div class="form-section active" id="step-address">
+                        <h3>1. Votre adresse de livraison</h3>
+                        <div class="form-group">
+                            <label for="full-name">Nom complet</label>
+                            <input type="text" id="full-name" name="full_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Numéro de téléphone</label>
+                            <input type="tel" id="phone" name="phone" placeholder="+242 xx xxx xxxx" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Adresse</label>
+                            <input type="text" id="address" name="address" placeholder="Ex: Avenue de la Paix, Quartier Centre-Ville, N°123" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="city">Ville</label>
+                            <select id="city" name="city" required>
+                                <option value="">Sélectionnez une ville</option>
+                                <option value="brazzaville">Brazzaville</option>
+                                <option value="pointe-noire">Pointe-Noire</option>
+                                <option value="dolisie">Dolisie</option>
+                                </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="details">Informations complémentaires (facultatif)</label>
+                            <textarea id="details" name="details" rows="3" placeholder="Ex: Bâtiment jaune, près de la pharmacie..."></textarea>
+                        </div>
+                        <button type="button" class="btn btn-primary next-step" data-next-step="step-delivery">Continuer vers la livraison</button>
+                    </div>
+
+                    <div class="form-section" id="step-delivery">
+                        <h3>2. Choisissez votre mode de livraison</h3>
+                        <div class="delivery-options">
+                            <label class="delivery-option">
+                                <input type="radio" name="delivery_method" value="home_delivery" checked>
+                                <span class="option-title">Livraison à domicile (Brazzaville)</span>
+                                <span class="option-price">2 000 XOF</span>
+                                <span class="option-description">Recevez votre commande directement chez vous.</span>
+                            </label>
+                            <label class="delivery-option">
+                                <input type="radio" name="delivery_method" value="pickup_point">
+                                <span class="option-title">Retrait en point relais</span>
+                                <span class="option-price">Gratuit</span>
+                                <span class="option-description">Récupérez votre commande au point relais le plus proche.</span>
+                                <p class="sub-option"><a href="#">Voir les points relais disponibles</a></p>
+                            </label>
+                            <label class="delivery-option">
+                                <input type="radio" name="delivery_method" value="inter_city_delivery">
+                                <span class="option-title">Livraison inter-villes (ex: vers Pointe-Noire)</span>
+                                <span class="option-price">5 000 XOF</span>
+                                <span class="option-description">Pour les livraisons en dehors de Brazzaville.</span>
+                            </label>
+                        </div>
+                        <button type="button" class="btn btn-secondary prev-step" data-prev-step="step-address">Retour</button>
+                        <button type="button" class="btn btn-primary next-step" data-next-step="step-payment">Continuer vers le paiement</button>
+                    </div>
+
+                    <div class="form-section" id="step-payment">
+                        <h3>3. Choisissez votre mode de paiement</h3>
+                        <div class="payment-options">
+                            <label class="payment-option">
+                                <input type="radio" name="payment_method" value="mtn_mobile_money" checked>
+                                <img src="src/img/mtn.png" alt="MTN Mobile Money" class="payment-logo" style="height:32px;object-fit:contain;">
+                                <span>MTN Mobile Money</span>
+                            </label>
+                            <label class="payment-option">
+                                <input type="radio" name="payment_method" value="airtel_money">
+                                <img src="src/img/airtel.png" alt="Airtel Money" class="payment-logo" style="height:32px;object-fit:contain;">
+                                <span>Airtel Money</span>
+                            </label>
+                            <label class="payment-option">
+                                <input type="radio" name="payment_method" value="credit_card">
+                                <img src="src/img/visa.png" alt="Carte de Crédit" class="payment-logo" style="height:32px;object-fit:contain;">
+                                <span>Carte de Crédit (Visa/MasterCard)</span>
+                            </label>
+                            <label class="payment-option">
+                                <input type="radio" name="payment_method" value="cash_on_delivery">
+                                <i class="fas fa-money-bill-wave"></i>
+                                <span>Paiement à la livraison</span>
+                                <span class="option-description">(Disponible pour certaines commandes et zones)</span>
+                            </label>
+                        </div>
+                        <button type="button" class="btn btn-secondary prev-step" data-prev-step="step-delivery">Retour</button>
+                        <button type="button" class="btn btn-primary next-step" data-next-step="step-summary">Confirmer & Récapitulatif</button>
+                    </div>
+
+                    <div class="form-section" id="step-summary">
+                        <h3>4. Récapitulatif de votre commande</h3>
+                        <div class="order-summary-details">
+                            <h4>Articles :</h4>
+                            <ul id="summary-items-list">
+                                <li>Chargement...</li>
+                            </ul>
+                            <p>Sous-total articles : <strong id="summary-subtotal">0 FCFA</strong></p>
+                            <p>Livraison : <strong id="summary-shipping">2 500 FCFA</strong></p>
+                            <p class="total-final">Total à payer : <strong id="summary-total">0 FCFA</strong></p>
+
+                            <h4>Adresse de livraison :</h4>
+                            <p id="summary-address">Sera remplie automatiquement.</p>
+
+                            <h4>Mode de paiement :</h4>
+                            <p id="summary-payment">Sera rempli automatiquement.</p>
+                        </div>
+                        <button type="button" class="btn btn-secondary prev-step" data-prev-step="step-payment">Retour</button>
+                        <button type="submit" class="btn btn-success confirm-order-btn">Confirmer la commande et payer</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container footer-grid">
+            <div class="footer-column">
+                <h4>VotreMarché</h4>
+                <ul>
+                    <li><a href="a-propos.html">À propos de nous</a></li>
+                    <li><a href="vendre.html">Devenir Vendeur</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Aide & Support</h4>
+                <ul>
+                    <li><a href="contact.html">Nous contacter</a></li>
+                    <li><a href="conditions.html">Conditions générales</a></li>
+                    <li><a href="confidentialite.html">Politique de confidentialité</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Restez Connecté</h4>
+                <div class="social-icons">
+                    <a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+                </div>
+                <p class="copyright">&copy; 2025 VotreMarché. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nous Contacter - VotreMarché</title>
+    <link rel="icon" type="image/png" href="src/img/logo.jpg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { 'vm-accent': '#f2c335', 'vm-primary': '#4a634e' } } } }
+    </script>
+    <style>
+        body { background-color: #0f172a; background-image: radial-gradient(circle at 1px 1px, #334155 1px, transparent 0); background-size: 20px 20px; }
+    </style>
+</head>
+<body class="bg-slate-900 text-white font-sans">
+
+<!-- HEADER -->
+<header class="w-full sticky top-0 bg-slate-800/80 backdrop-blur-md z-50 shadow-md">
+    <div class="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
+        <a href="index.html" class="flex items-center gap-2">
+            <img src="src/img/logo.jpg" alt="Logo VotreMarché" class="h-12 w-12 rounded-full">
+            <span class="font-bold text-xl">VotreMarché</span>
+        </a>
+        <div class="flex items-center gap-4">
+            <a href="connexion.html" class="px-4 py-1 border rounded-lg hover:bg-slate-700">Se connecter</a>
+            <a href="inscription.html" class="px-4 py-1 bg-vm-accent text-black rounded-lg hover:scale-105 transition">S'inscrire</a>
+            <a href="panier.html" class="relative">
+                <i class="fas fa-shopping-cart text-xl"></i>
+                <span class="absolute -top-2 -right-2 bg-vm-accent text-black text-xs font-bold px-2 rounded-full">0</span>
+            </a>
+        </div>
+    </div>
+</header>
+
+<!-- MAIN -->
+<main class="max-w-5xl mx-auto px-4 py-12">
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold mb-4">Nous Contacter</h1>
+        <p class="text-slate-400 text-lg">Notre équipe est disponible 7j/7 pour vous aider</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-8">
+        <!-- Informations de contact -->
+        <div class="space-y-6">
+            <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
+                <h2 class="font-semibold text-lg mb-4">Nos coordonnées</h2>
+                <div class="space-y-4">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-vm-accent/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-map-marker-alt text-vm-accent"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium">Adresse</p>
+                            <p class="text-slate-400 text-sm">Avenue de la Paix, Centre-Ville<br>Brazzaville, Congo-Brazzaville</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-vm-accent/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-phone text-vm-accent"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium">Téléphone</p>
+                            <p class="text-slate-400 text-sm">+242 06 XXX XXXX<br>Lun-Sam : 8h00 - 20h00</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-vm-accent/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-envelope text-vm-accent"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium">Email</p>
+                            <p class="text-slate-400 text-sm">support@votremarche.cg<br>Réponse sous 24h</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-vm-accent/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i class="fab fa-whatsapp text-vm-accent"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium">WhatsApp</p>
+                            <p class="text-slate-400 text-sm">+242 06 XXX XXXX<br>Réponse rapide</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
+                <h2 class="font-semibold text-lg mb-4">Suivez-nous</h2>
+                <div class="flex gap-4">
+                    <a href="#" class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center hover:scale-105 transition">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-500 rounded-lg flex items-center justify-center hover:scale-105 transition">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 bg-sky-500 rounded-lg flex items-center justify-center hover:scale-105 transition">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </div>
+            </div>
+
+            <a href="faq.html" class="flex items-center gap-3 bg-vm-accent/10 border border-vm-accent/30 rounded-xl p-5 hover:bg-vm-accent/20 transition">
+                <i class="fas fa-question-circle text-vm-accent text-2xl"></i>
+                <div>
+                    <p class="font-semibold">Consultez notre FAQ</p>
+                    <p class="text-slate-400 text-sm">Trouvez rapidement des réponses à vos questions fréquentes</p>
+                </div>
+                <i class="fas fa-arrow-right text-vm-accent ml-auto"></i>
+            </a>
+        </div>
+
+        <!-- Formulaire de contact -->
+        <div class="bg-slate-800/60 backdrop-blur-md p-8 rounded-xl">
+            <h2 class="font-semibold text-lg mb-6">Envoyer un message</h2>
+            <form id="contact-form" class="space-y-5">
+                <div>
+                    <label for="contact-name" class="block text-sm font-medium mb-1">Nom complet</label>
+                    <input type="text" id="contact-name" required
+                           class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:border-vm-accent">
+                </div>
+                <div>
+                    <label for="contact-email" class="block text-sm font-medium mb-1">Email</label>
+                    <input type="email" id="contact-email" required
+                           class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:border-vm-accent">
+                </div>
+                <div>
+                    <label for="contact-subject" class="block text-sm font-medium mb-1">Sujet</label>
+                    <select id="contact-subject" class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:border-vm-accent">
+                        <option value="">Sélectionnez un sujet</option>
+                        <option value="commande">Problème avec une commande</option>
+                        <option value="paiement">Question sur le paiement</option>
+                        <option value="livraison">Suivi de livraison</option>
+                        <option value="compte">Problème de compte</option>
+                        <option value="vendeur">Devenir vendeur</option>
+                        <option value="autre">Autre question</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="contact-message" class="block text-sm font-medium mb-1">Message</label>
+                    <textarea id="contact-message" rows="5" required
+                              class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:border-vm-accent resize-none"
+                              placeholder="Décrivez votre problème ou votre question..."></textarea>
+                </div>
+                <button type="submit" class="w-full py-3 bg-vm-accent text-black rounded-lg font-semibold hover:scale-105 transition">
+                    <i class="fas fa-paper-plane mr-2"></i> Envoyer le message
+                </button>
+            </form>
+            <div id="contact-success" class="hidden text-center py-8">
+                <i class="fas fa-check-circle text-green-400 text-5xl mb-4 block"></i>
+                <h3 class="text-xl font-bold mb-2">Message envoyé !</h3>
+                <p class="text-slate-400">Nous vous répondrons dans les 24 heures.</p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="mt-8 bg-slate-800/70 text-slate-400 text-sm">
+    <div class="max-w-6xl mx-auto px-4 py-6 text-center border-t border-slate-700">
+        <p>© 2025 VotreMarché. Tous droits réservés.</p>
+    </div>
+</footer>
+
+<script src="js/script.js"></script>
+<script>
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        document.getElementById('contact-form').style.display = 'none';
+        document.getElementById('contact-success').classList.remove('hidden');
+    });
+</script>
+</body>
+</html>

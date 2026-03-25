@@ -1,0 +1,17 @@
+/* ============================================
+   VotreMarché — Polices de caractères
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap');
+
+/* Police principale : Inter (lisibilité optimale) */
+body, input, textarea, select, button {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Titres : Poppins (plus percutant) */
+h1, h2, h3, h4, h5, h6,
+.profile-title, .section-title, .hero-title,
+.logo-link, .footer-title {
+    font-family: 'Poppins', 'Inter', sans-serif;
+}

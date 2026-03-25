@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produits - VotreMarché</title>
+    <meta name="description" content="Parcourez nos produits par catégorie sur VotreMarché, Congo-Brazzaville.">
+    <link rel="icon" type="image/png" href="src/img/logo.jpg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'vm-primary': '#4a634e',
+                        'vm-accent': '#f2c335',
+                        'vm-centre': '#304870',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0f172a;
+            background-image: radial-gradient(circle at 1px 1px, #334155 1px, transparent 0);
+            background-size: 20px 20px;
+        }
+        .skip-link { position: absolute; top: -40px; left: 0; background: #4F46E5; color: white; padding: 8px; z-index: 100; transition: top 0.3s; }
+        .skip-link:focus { top: 0; }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    </style>
+</head>
+<body class="bg-slate-900 text-white font-sans">
+
+<a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+<!-- HEADER -->
+<header class="w-full sticky top-0 bg-slate-800/80 backdrop-blur-md z-50 shadow-md">
+    <div class="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
+        <a href="index.html" class="flex items-center gap-2">
+            <img src="src/img/logo.jpg" alt="Logo VotreMarché" class="h-12 w-12 rounded-full">
+            <span class="font-bold text-xl">VotreMarché</span>
+        </a>
+
+        <!-- Barre de recherche -->
+        <div class="hidden md:flex flex-1 max-w-md mx-6">
+            <div class="relative w-full">
+                <input type="search" placeholder="Rechercher un produit..."
+                       class="w-full px-4 py-2 pl-10 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:border-vm-accent text-sm">
+                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+            </div>
+        </div>
+
+        <nav class="hidden md:flex gap-6 text-slate-300">
+            <a href="categories.html" class="hover:text-vm-accent">Catégories</a>
+            <a href="vendre.html" class="hover:text-vm-accent">Vendre</a>
+            <a href="aide.html" class="hover:text-vm-accent">Aide</a>
+        </nav>
+        <div class="flex items-center gap-3">
+            <a href="connexion.html" class="px-3 py-1 border border-slate-600 rounded-lg hover:bg-slate-700 text-sm">Se connecter</a>
+            <a href="inscription.html" class="px-3 py-1 bg-vm-accent text-black rounded-lg hover:scale-105 transition text-sm">S'inscrire</a>
+            <a href="panier.html" class="relative">
+                <i class="fas fa-shopping-cart text-xl"></i>
+                <span class="absolute -top-2 -right-2 bg-vm-accent text-black text-xs font-bold px-2 rounded-full">0</span>
+            </a>
+        </div>
+    </div>
+</header>
+
+<!-- MAIN -->
+<main id="main-content" class="max-w-6xl mx-auto px-4 py-8">
+
+    <!-- Breadcrumb -->
+    <nav class="text-sm text-slate-400 mb-6 flex items-center gap-2">
+        <a href="index.html" class="hover:text-vm-accent">Accueil</a>
+        <i class="fas fa-chevron-right text-xs"></i>
+        <a href="categories.html" class="hover:text-vm-accent">Catégories</a>
+        <i class="fas fa-chevron-right text-xs"></i>
+        <span class="text-white" id="breadcrumb-cat">Produits</span>
+    </nav>
+
+    <!-- Titre + tri -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div>
+            <h1 id="page-title" class="text-3xl font-bold text-white">Produits</h1>
+            <p id="product-count" class="text-slate-400 mt-1 text-sm"></p>
+        </div>
+        <div class="flex items-center gap-3">
+            <label for="sort-select" class="text-slate-400 text-sm">Trier par :</label>
+            <select id="sort-select" class="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm focus:outline-none focus:border-vm-accent">
+                <option value="default">Popularité</option>
+                <option value="price-asc">Prix croissant</option>
+                <option value="price-desc">Prix décroissant</option>
+                <option value="rating">Meilleures notes</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Grille de produits -->
+    <div id="products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+        <!-- Rempli dynamiquement par script.js -->
+        <div class="col-span-full flex items-center justify-center py-16">
+            <div class="flex flex-col items-center gap-4 text-slate-400">
+                <i class="fas fa-spinner fa-spin text-4xl text-vm-accent"></i>
+                <p>Chargement des produits...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Catégories suggérées -->
+    <section class="mt-16">
+        <h2 class="text-xl font-semibold mb-6">Autres catégories</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <a href="liste-produits.html?cat=electronique" class="flex items-center gap-3 p-4 bg-slate-800/50 border border-slate-700 rounded-lg hover:border-vm-accent transition">
+                <i class="fas fa-laptop text-vm-accent text-xl"></i>
+                <span class="text-sm font-medium">Électronique</span>
+            </a>
+            <a href="liste-produits.html?cat=alimentation" class="flex items-center gap-3 p-4 bg-slate-800/50 border border-slate-700 rounded-lg hover:border-vm-accent transition">
+                <i class="fas fa-apple-alt text-vm-accent text-xl"></i>
+                <span class="text-sm font-medium">Alimentation</span>
+            </a>
+            <a href="liste-produits.html?cat=mode" class="flex items-center gap-3 p-4 bg-slate-800/50 border border-slate-700 rounded-lg hover:border-vm-accent transition">
+                <i class="fas fa-tshirt text-vm-accent text-xl"></i>
+                <span class="text-sm font-medium">Mode</span>
+            </a>
+            <a href="liste-produits.html?cat=maison" class="flex items-center gap-3 p-4 bg-slate-800/50 border border-slate-700 rounded-lg hover:border-vm-accent transition">
+                <i class="fas fa-home text-vm-accent text-xl"></i>
+                <span class="text-sm font-medium">Maison & Jardin</span>
+            </a>
+        </div>
+    </section>
+</main>
+
+<!-- FOOTER -->
+<footer class="mt-16 bg-slate-800/70 backdrop-blur-md text-slate-400 text-sm">
+    <div class="max-w-6xl mx-auto px-4 py-8 grid md:grid-cols-4 gap-8">
+        <div>
+            <h4 class="font-bold text-white mb-3">VotreMarché</h4>
+            <ul class="space-y-2">
+                <li><a href="a-propos.html" class="hover:text-white">À propos de nous</a></li>
+                <li><a href="vendre.html" class="hover:text-white">Devenir Vendeur</a></li>
+                <li><a href="faq.html" class="hover:text-white">FAQ</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="font-bold text-white mb-3">Aide & Support</h4>
+            <ul class="space-y-2">
+                <li><a href="contact.html" class="hover:text-white">Nous contacter</a></li>
+                <li><a href="conditions.html" class="hover:text-white">Conditions générales</a></li>
+                <li><a href="confidentialite.html" class="hover:text-white">Politique de confidentialité</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="font-bold text-white mb-3">Moyens de Paiement</h4>
+            <div class="flex gap-4 items-center flex-wrap">
+                <img src="src/img/airtel.png" alt="Airtel" class="h-8">
+                <img src="src/img/mtn.png" alt="MTN" class="h-8">
+                <img src="src/img/visa.png" alt="Visa" class="h-6">
+            </div>
+        </div>
+        <div>
+            <h4 class="font-bold text-white mb-3">Suivez-nous</h4>
+            <div class="flex gap-4 mb-4">
+                <a href="#" class="hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="hover:text-white"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="hover:text-white"><i class="fab fa-twitter"></i></a>
+            </div>
+            <form class="newsletter-form flex">
+                <input type="email" placeholder="Votre email" class="flex-grow px-3 py-2 rounded-l-lg bg-slate-700 text-white text-sm" />
+                <button type="submit" class="bg-vm-accent text-black px-4 rounded-r-lg"><i class="fas fa-paper-plane"></i></button>
+            </form>
+        </div>
+    </div>
+    <div class="text-center py-4 border-t border-slate-700">© 2025 VotreMarché. Tous droits réservés.</div>
+</footer>
+
+<script src="js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord Vendeur - VotreMarché</title>
+    <meta name="description" content="Gérez votre boutique, vos produits et vos commandes sur VotreMarché Congo-Brazzaville.">
+    <link rel="stylesheet" href="css/fonts.css">
+    <link rel="stylesheet" href="css/modern-style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" type="image/png" href="src/img/logo.jpg">
+    <style>
+        .seller-badge { background: #f2c335; color: #1e293b; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: var(--card-bg, #1e293b); border: 1px solid #334155; border-radius: 12px; padding: 20px 16px; text-align: center; }
+        .stat-card .stat-value { font-size: 28px; font-weight: 700; color: #f2c335; }
+        .stat-card .stat-label { font-size: 13px; color: #94a3b8; margin-top: 4px; }
+        .product-table { width: 100%; border-collapse: collapse; }
+        .product-table th { text-align: left; padding: 10px 12px; font-size: 12px; text-transform: uppercase; color: #64748b; border-bottom: 1px solid #334155; }
+        .product-table td { padding: 12px; border-bottom: 1px solid #1e293b; vertical-align: middle; }
+        .product-table tr:hover td { background: #1e293b44; }
+        .badge-cat { font-size: 11px; background: #304870; color: #93c5fd; padding: 2px 8px; border-radius: 20px; }
+        .empty-state { text-align: center; padding: 48px 24px; color: #64748b; }
+        .empty-state i { font-size: 48px; margin-bottom: 16px; display: block; }
+        .form-add { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        @media (max-width: 640px) { .form-add { grid-template-columns: 1fr; } }
+        .form-add .full { grid-column: 1 / -1; }
+        .order-row { background: #1e293b; border-radius: 10px; padding: 16px; margin-bottom: 12px; border: 1px solid #334155; }
+        .order-row .order-meta { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+        .status-badge-en-cours { background: #f59e0b22; color: #f59e0b; border: 1px solid #f59e0b55; padding: 2px 10px; border-radius: 20px; font-size: 12px; }
+        .status-badge-livree { background: #22c55e22; color: #22c55e; border: 1px solid #22c55e55; padding: 2px 10px; border-radius: 20px; font-size: 12px; }
+        .pwd-hints { font-size: 12px; color: #94a3b8; margin-top: 6px; line-height: 1.7; }
+        .pwd-hints span { display: block; }
+        .pwd-hints span.ok { color: #22c55e; }
+        .pwd-hints span.fail { color: #ef4444; }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+    <header class="sticky-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <a href="index.html" class="logo-link" aria-label="Accueil VotreMarché">VotreMarché</a>
+                    <nav class="main-nav" role="navigation" aria-label="Navigation principale">
+                        <a href="categories.html" class="nav-link">Catégories</a>
+                        <a href="aide.html" class="nav-link">Aide</a>
+                    </nav>
+                </div>
+                <div class="header-actions">
+                    <a href="profil-vendeur.html" class="btn btn-primary">Ma Boutique</a>
+                    <a href="deconnexion.html" class="btn btn-danger">Déconnexion</a>
+                </div>
+                <button class="mobile-menu-toggle" aria-expanded="false" aria-controls="mobile-menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div id="mobile-menu" class="mobile-menu">
+        <div class="mobile-menu-content">
+            <a href="categories.html" class="mobile-nav-link">Catégories</a>
+            <a href="aide.html" class="mobile-nav-link">Aide</a>
+        </div>
+    </div>
+
+    <main id="main-content" class="profile-main">
+        <div class="container">
+            <h1 class="profile-title">
+                Tableau de Bord Vendeur
+                <span class="seller-badge"><i class="fas fa-store"></i> Vendeur</span>
+            </h1>
+
+            <div class="profile-grid">
+                <!-- Sidebar -->
+                <aside class="profile-sidebar">
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <img src="src/img/logo.jpg" alt="Logo boutique" class="profile-avatar" width="80" height="80">
+                            <h2 class="profile-greeting">Bonjour, <span id="seller-name">Vendeur</span> !</h2>
+                            <p style="font-size:12px;color:#94a3b8;margin-top:4px;" id="seller-email"></p>
+                        </div>
+                        <nav class="profile-nav">
+                            <a href="#" class="dashboard-link active" data-target="stats">
+                                <i class="fas fa-chart-bar"></i> Tableau de bord
+                            </a>
+                            <a href="#" class="dashboard-link" data-target="mes-produits">
+                                <i class="fas fa-box"></i> Mes Produits
+                            </a>
+                            <a href="#" class="dashboard-link" data-target="ajouter-produit">
+                                <i class="fas fa-plus-circle"></i> Ajouter un Produit
+                            </a>
+                            <a href="#" class="dashboard-link" data-target="commandes-recues">
+                                <i class="fas fa-shopping-bag"></i> Commandes Reçues
+                            </a>
+                            <a href="#" class="dashboard-link" data-target="mon-profil">
+                                <i class="fas fa-user"></i> Mon Profil
+                            </a>
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- Contenu -->
+                <div class="profile-content">
+
+                    <!-- Stats -->
+                    <section id="stats" class="profile-section active">
+                        <div class="section-header">
+                            <h2 class="section-title">Vue d'ensemble</h2>
+                            <p class="section-description">Statistiques de votre boutique</p>
+                        </div>
+                        <div class="stat-grid">
+                            <div class="stat-card">
+                                <div class="stat-value" id="stat-products">0</div>
+                                <div class="stat-label">Produits en vente</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="stat-orders">0</div>
+                                <div class="stat-label">Commandes reçues</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="stat-revenue">0</div>
+                                <div class="stat-label">Chiffre d'affaires (FCFA)</div>
+                            </div>
+                        </div>
+                        <div style="background:#1e293b;border:1px solid #334155;border-radius:12px;padding:20px;">
+                            <h3 style="margin:0 0 12px;font-size:15px;">Démarrage rapide</h3>
+                            <ul style="color:#94a3b8;font-size:14px;list-style:none;padding:0;line-height:2;">
+                                <li><i class="fas fa-check-circle" style="color:#22c55e;margin-right:8px;"></i> Compte vendeur actif</li>
+                                <li id="hint-product"><i class="fas fa-circle" style="color:#64748b;margin-right:8px;"></i> Ajoutez votre premier produit</li>
+                                <li><i class="fas fa-circle" style="color:#64748b;margin-right:8px;"></i> Attendez vos premières commandes</li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    <!-- Mes Produits -->
+                    <section id="mes-produits" class="profile-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Mes Produits</h2>
+                            <p class="section-description">Gérez votre catalogue</p>
+                        </div>
+                        <div id="products-container">
+                            <div class="empty-state">
+                                <i class="fas fa-box-open"></i>
+                                <p>Vous n'avez pas encore de produits.</p>
+                                <button class="btn btn-primary" onclick="showSection('ajouter-produit')">
+                                    <i class="fas fa-plus"></i> Ajouter un produit
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Ajouter un Produit -->
+                    <section id="ajouter-produit" class="profile-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Ajouter un Produit</h2>
+                            <p class="section-description">Publiez un nouvel article dans votre boutique</p>
+                        </div>
+                        <form id="form-add-product" class="profile-form">
+                            <div class="form-add">
+                                <div class="form-group full">
+                                    <label class="form-label" for="p-name">Nom du produit *</label>
+                                    <input type="text" id="p-name" class="form-input" placeholder="Ex: Chemise Wax Africaine" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="p-price">Prix de vente (FCFA) *</label>
+                                    <input type="number" id="p-price" class="form-input" min="100" placeholder="Ex: 15000" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="p-original-price">Prix barré (FCFA)</label>
+                                    <input type="number" id="p-original-price" class="form-input" min="100" placeholder="Ex: 18000">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="p-category">Catégorie *</label>
+                                    <select id="p-category" class="form-input" required>
+                                        <option value="">Choisir une catégorie</option>
+                                        <optgroup label="Alimentation">
+                                            <option value="fruits-legumes">Fruits &amp; Légumes</option>
+                                            <option value="viandes-poissons">Viandes &amp; Poissons</option>
+                                            <option value="epicerie">Épicerie</option>
+                                        </optgroup>
+                                        <optgroup label="Mode">
+                                            <option value="hommes">Mode Homme</option>
+                                            <option value="femmes">Mode Femme</option>
+                                            <option value="enfants">Mode Enfants</option>
+                                        </optgroup>
+                                        <optgroup label="Électronique">
+                                            <option value="smartphones">Smartphones</option>
+                                            <option value="ordinateurs">Ordinateurs</option>
+                                            <option value="televisions">Télévisions</option>
+                                        </optgroup>
+                                        <optgroup label="Maison">
+                                            <option value="meubles">Meubles</option>
+                                            <option value="decorations">Décorations</option>
+                                            <option value="outils">Outils de Jardin</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="p-stock">Stock disponible</label>
+                                    <input type="number" id="p-stock" class="form-input" min="0" value="100" placeholder="Ex: 50">
+                                </div>
+                                <div class="form-group full">
+                                    <label class="form-label" for="p-description">Description</label>
+                                    <textarea id="p-description" class="form-input" rows="3" placeholder="Décrivez votre produit..."></textarea>
+                                </div>
+                                <div class="form-group full">
+                                    <label class="form-label" for="p-image">URL de l'image (optionnel)</label>
+                                    <input type="url" id="p-image" class="form-input" placeholder="https://exemple.com/image.jpg">
+                                </div>
+                            </div>
+                            <div class="form-actions" style="margin-top:16px;">
+                                <button type="submit" class="btn btn-primary" id="btn-add-product">
+                                    <i class="fas fa-plus"></i> Publier le produit
+                                </button>
+                            </div>
+                        </form>
+                    </section>
+
+                    <!-- Commandes Reçues -->
+                    <section id="commandes-recues" class="profile-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Commandes Reçues</h2>
+                            <p class="section-description">Commandes passées contenant vos produits</p>
+                        </div>
+                        <div id="orders-container">
+                            <div class="empty-state">
+                                <i class="fas fa-inbox"></i>
+                                <p>Aucune commande reçue pour l'instant.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Mon Profil -->
+                    <section id="mon-profil" class="profile-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Mon Profil Vendeur</h2>
+                            <p class="section-description">Informations de votre compte</p>
+                        </div>
+                        <div class="profile-form">
+                            <form id="form-update-profile">
+                                <div class="form-group">
+                                    <label class="form-label" for="upd-name">Nom de la boutique / Nom complet</label>
+                                    <input type="text" id="upd-name" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="upd-email">Email</label>
+                                    <input type="email" id="upd-email" class="form-input" disabled style="opacity:0.6;">
+                                    <small style="color:#64748b;">L'email ne peut pas être modifié.</small>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="upd-phone">Téléphone</label>
+                                    <input type="tel" id="upd-phone" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="upd-address">Adresse de la boutique</label>
+                                    <textarea id="upd-address" class="form-input" rows="2"></textarea>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">Sauvegarder</button>
+                                </div>
+                            </form>
+
+                            <hr style="border-color:#334155;margin:24px 0;">
+
+                            <h3 style="font-size:15px;margin-bottom:16px;">Changer le mot de passe</h3>
+                            <form id="form-change-password">
+                                <div class="form-group">
+                                    <label class="form-label" for="cur-pwd">Mot de passe actuel</label>
+                                    <input type="password" id="cur-pwd" class="form-input" autocomplete="current-password">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="new-pwd">Nouveau mot de passe</label>
+                                    <input type="password" id="new-pwd" class="form-input" autocomplete="new-password">
+                                    <div class="pwd-hints" id="pwd-strength-seller">
+                                        <span id="s-len">8 caractères minimum</span>
+                                        <span id="s-upper">1 lettre majuscule</span>
+                                        <span id="s-lower">1 lettre minuscule</span>
+                                        <span id="s-digit">1 chiffre</span>
+                                        <span id="s-special">1 caractère spécial (!@#$%...)</span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="conf-pwd">Confirmer le nouveau mot de passe</label>
+                                    <input type="password" id="conf-pwd" class="form-input" autocomplete="new-password">
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-outline">Changer le mot de passe</button>
+                                </div>
+                            </form>
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2025 VotreMarché. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script>
+    const API = 'http://localhost:3001/api';
+
+    function getToken() {
+        return localStorage.getItem('vm_token') || '';
+    }
+
+    function apiHeaders() {
+        return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() };
+    }
+
+    // ── Navigation sidebar ──────────────────────────────────────────
+    function showSection(id) {
+        document.querySelectorAll('.dashboard-link').forEach(l => l.classList.remove('active'));
+        document.querySelectorAll('.profile-section').forEach(s => s.classList.remove('active'));
+        const link = document.querySelector(`.dashboard-link[data-target="${id}"]`);
+        if (link) link.classList.add('active');
+        const section = document.getElementById(id);
+        if (section) section.classList.add('active');
+    }
+
+    document.querySelectorAll('.dashboard-link[data-target]').forEach(link => {
+        link.addEventListener('click', e => {
+            e.preventDefault();
+            showSection(link.dataset.target);
+        });
+    });
+
+    // ── Chargement initial ──────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', async () => {
+        const user = await loadUser();
+        if (!user) return;
+        if (user.role !== 'seller') {
+            window.location.href = 'profil-utilisateur.html';
+            return;
+        }
+
+        document.getElementById('seller-name').textContent = user.fullName;
+        document.getElementById('seller-email').textContent = user.email;
+        document.getElementById('upd-name').value = user.fullName;
+        document.getElementById('upd-email').value = user.email;
+        document.getElementById('upd-phone').value = user.phone || '';
+        document.getElementById('upd-address').value = user.address || '';
+
+        await loadProducts();
+        await loadOrders();
+    });
+
+    async function loadUser() {
+        const token = getToken();
+        if (!token) { window.location.href = 'connexion.html'; return null; }
+        try {
+            const res = await fetch(API + '/auth/me', { headers: apiHeaders() });
+            if (!res.ok) { window.location.href = 'connexion.html'; return null; }
+            const data = await res.json();
+            return data.user;
+        } catch {
+            // Fallback localStorage
+            try { return JSON.parse(localStorage.getItem('vm_current_user')); } catch { return null; }
+        }
+    }
+
+    // ── Produits ────────────────────────────────────────────────────
+    async function loadProducts() {
+        try {
+            const res = await fetch(API + '/products/mine', { headers: apiHeaders() });
+            const data = await res.json();
+            const products = data.products || [];
+            document.getElementById('stat-products').textContent = products.length;
+            if (products.length > 0) {
+                const hint = document.getElementById('hint-product');
+                if (hint) hint.innerHTML = '<i class="fas fa-check-circle" style="color:#22c55e;margin-right:8px;"></i> Premier produit ajouté';
+            }
+            renderProducts(products);
+        } catch { /* API non disponible */ }
+    }
+
+    function renderProducts(products) {
+        const container = document.getElementById('products-container');
+        if (!products.length) {
+            container.innerHTML = `<div class="empty-state"><i class="fas fa-box-open"></i><p>Vous n'avez pas encore de produits.</p><button class="btn btn-primary" onclick="showSection('ajouter-produit')"><i class="fas fa-plus"></i> Ajouter un produit</button></div>`;
+            return;
+        }
+        container.innerHTML = `
+            <div style="overflow-x:auto;">
+            <table class="product-table">
+                <thead><tr>
+                    <th>Nom</th><th>Catégorie</th><th>Prix</th><th>Stock</th><th>Actions</th>
+                </tr></thead>
+                <tbody>
+                ${products.map(p => `
+                    <tr>
+                        <td><strong>${p.name}</strong></td>
+                        <td><span class="badge-cat">${p.category}</span></td>
+                        <td>${p.price.toLocaleString('fr-FR')} FCFA</td>
+                        <td>${p.stock}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" onclick="deleteProduct(${p.id})">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </button>
+                        </td>
+                    </tr>`).join('')}
+                </tbody>
+            </table>
+            </div>`;
+    }
+
+    async function deleteProduct(id) {
+        if (!confirm('Supprimer ce produit ?')) return;
+        try {
+            const res = await fetch(API + '/products/' + id, { method: 'DELETE', headers: apiHeaders() });
+            if (res.ok) {
+                Utils.showNotification('Produit supprimé', 'success');
+                loadProducts();
+            } else {
+                const d = await res.json();
+                Utils.showNotification(d.error || 'Erreur', 'error');
+            }
+        } catch {
+            Utils.showNotification('Erreur de connexion au serveur', 'error');
+        }
+    }
+
+    // ── Ajouter produit ─────────────────────────────────────────────
+    document.getElementById('form-add-product').addEventListener('submit', async e => {
+        e.preventDefault();
+        const btn = document.getElementById('btn-add-product');
+        const name = document.getElementById('p-name').value.trim();
+        const price = parseInt(document.getElementById('p-price').value);
+        const originalPrice = parseInt(document.getElementById('p-original-price').value) || null;
+        const category = document.getElementById('p-category').value;
+        const stock = parseInt(document.getElementById('p-stock').value) || 100;
+        const description = document.getElementById('p-description').value.trim();
+        const imageUrl = document.getElementById('p-image').value.trim();
+
+        if (!name || !price || !category) {
+            Utils.showNotification('Nom, prix et catégorie sont obligatoires', 'error');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Publication...';
+        try {
+            const res = await fetch(API + '/products', {
+                method: 'POST',
+                headers: apiHeaders(),
+                body: JSON.stringify({ name, price, originalPrice, category, stock, description, imageUrl })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                Utils.showNotification('Produit publié avec succès !', 'success');
+                e.target.reset();
+                showSection('mes-produits');
+                loadProducts();
+            } else {
+                Utils.showNotification(data.error || 'Erreur lors de la publication', 'error');
+            }
+        } catch {
+            Utils.showNotification('Erreur de connexion au serveur', 'error');
+        }
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-plus"></i> Publier le produit';
+    });
+
+    // ── Commandes reçues ────────────────────────────────────────────
+    async function loadOrders() {
+        try {
+            const res = await fetch(API + '/products/seller-orders', { headers: apiHeaders() });
+            const data = await res.json();
+            const orders = data.orders || [];
+            document.getElementById('stat-orders').textContent = orders.length;
+            const revenue = orders.reduce((sum, o) => sum + (o.items || []).reduce((s, i) => s + i.price * i.quantity, 0), 0);
+            document.getElementById('stat-revenue').textContent = revenue.toLocaleString('fr-FR');
+            renderOrders(orders);
+        } catch { /* API non disponible */ }
+    }
+
+    function renderOrders(orders) {
+        const container = document.getElementById('orders-container');
+        if (!orders.length) {
+            container.innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><p>Aucune commande reçue pour l'instant.</p></div>`;
+            return;
+        }
+        container.innerHTML = orders.map(o => `
+            <div class="order-row">
+                <div class="order-meta">
+                    <strong>Commande #${o.id}</strong>
+                    <span class="status-badge-${o.status === 'Livrée' ? 'livree' : 'en-cours'}">${o.status}</span>
+                    <span style="color:#64748b;font-size:13px;">${new Date(o.createdAt).toLocaleDateString('fr-FR')}</span>
+                </div>
+                <div style="font-size:13px;color:#94a3b8;">
+                    Livraison : ${o.deliveryName || '—'} — ${o.deliveryCity || '—'}<br>
+                    Paiement : ${o.paymentMethod || '—'}
+                </div>
+                <div style="margin-top:8px;">
+                    ${(o.items || []).map(i => `
+                        <div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;">
+                            <span>${i.productName} × ${i.quantity}</span>
+                            <span>${(i.price * i.quantity).toLocaleString('fr-FR')} FCFA</span>
+                        </div>`).join('')}
+                </div>
+            </div>`).join('');
+    }
+
+    // ── Mise à jour profil ──────────────────────────────────────────
+    document.getElementById('form-update-profile').addEventListener('submit', async e => {
+        e.preventDefault();
+        const fullName = document.getElementById('upd-name').value.trim();
+        const phone = document.getElementById('upd-phone').value.trim();
+        const address = document.getElementById('upd-address').value.trim();
+        try {
+            const res = await fetch(API + '/auth/update', {
+                method: 'PUT', headers: apiHeaders(),
+                body: JSON.stringify({ fullName, phone, address })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                Utils.showNotification('Profil mis à jour !', 'success');
+                document.getElementById('seller-name').textContent = data.user.fullName;
+                // Update localStorage too
+                try {
+                    const stored = JSON.parse(localStorage.getItem('vm_current_user') || '{}');
+                    localStorage.setItem('vm_current_user', JSON.stringify({ ...stored, ...data.user }));
+                } catch {}
+            } else {
+                Utils.showNotification(data.error || 'Erreur', 'error');
+            }
+        } catch {
+            Utils.showNotification('Erreur de connexion au serveur', 'error');
+        }
+    });
+
+    // ── Changer mot de passe ────────────────────────────────────────
+    const newPwdInput = document.getElementById('new-pwd');
+    const checks = {
+        's-len':     p => p.length >= 8,
+        's-upper':   p => /[A-Z]/.test(p),
+        's-lower':   p => /[a-z]/.test(p),
+        's-digit':   p => /[0-9]/.test(p),
+        's-special': p => /[!@#$%^&*\-_=+;:,.<>?]/.test(p),
+    };
+    newPwdInput.addEventListener('input', () => {
+        const val = newPwdInput.value;
+        for (const [id, fn] of Object.entries(checks)) {
+            const el = document.getElementById(id);
+            if (el) el.className = fn(val) ? 'ok' : 'fail';
+        }
+    });
+
+    document.getElementById('form-change-password').addEventListener('submit', async e => {
+        e.preventDefault();
+        const currentPassword = document.getElementById('cur-pwd').value;
+        const newPassword = document.getElementById('new-pwd').value;
+        const confirmPassword = document.getElementById('conf-pwd').value;
+        if (newPassword !== confirmPassword) {
+            Utils.showNotification('Les mots de passe ne correspondent pas', 'error');
+            return;
+        }
+        try {
+            const res = await fetch(API + '/auth/change-password', {
+                method: 'PUT', headers: apiHeaders(),
+                body: JSON.stringify({ currentPassword, newPassword })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                Utils.showNotification('Mot de passe modifié avec succès !', 'success');
+                e.target.reset();
+            } else {
+                Utils.showNotification(data.error || 'Erreur', 'error');
+            }
+        } catch {
+            Utils.showNotification('Erreur de connexion au serveur', 'error');
+        }
+    });
+
+    // ── Déconnexion ─────────────────────────────────────────────────
+    document.querySelectorAll('a[href="deconnexion.html"]').forEach(link => {
+        link.addEventListener('click', e => {
+            e.preventDefault();
+            localStorage.removeItem('vm_token');
+            localStorage.removeItem('vm_current_user');
+            window.location.href = 'index.html';
+        });
+    });
+    </script>
+</body>
+</html>

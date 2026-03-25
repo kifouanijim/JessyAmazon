@@ -1,0 +1,18 @@
+# Dépendances Node
+backend/node_modules/
+
+# Base de données locale (ne pas versionner)
+backend/votremarche.db
+backend/votremarche.db-shm
+backend/votremarche.db-wal
+
+# Variables d'environnement (contient des secrets)
+backend/.env
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db

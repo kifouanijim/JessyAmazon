@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Compte - VotreMarché</title>
+    <meta name="description" content="Gérez votre profil, vos commandes et vos préférences sur VotreMarché, votre plateforme e-commerce au Congo.">
+    <link rel="stylesheet" href="css/fonts.css">
+    <link rel="stylesheet" href="css/modern-style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" type="image/png" href="src/img/logo.jpg">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">
+        Aller au contenu principal
+    </a>
+
+    <!-- Header avec effet de flou au défilement -->
+    <header class="sticky-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <a href="index.html" class="logo-link" aria-label="Accueil VotreMarché">
+                        VotreMarché
+                    </a>
+                    <nav class="main-nav" role="navigation" aria-label="Navigation principale">
+                        <a href="categories.html" class="nav-link">Catégories</a>
+                        <a href="vendre.html" class="nav-link">Vendre sur VotreMarché</a>
+                        <a href="aide.html" class="nav-link">Aide</a>
+                    </nav>
+                </div>
+
+                <div class="header-actions">
+                    <div class="search-container">
+                        <input type="search" 
+                               placeholder="Rechercher..." 
+                               class="search-input"
+                               aria-label="Rechercher">
+                        <i class="fas fa-search search-icon"></i>
+                    </div>
+                    <a href="profil-utilisateur.html" class="btn btn-primary">
+                        Mon Compte
+                    </a>
+                    <a href="panier.html" class="cart-link" aria-label="Panier">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-badge" aria-live="polite">0</span>
+                    </a>
+                    <a href="deconnexion.html" class="btn btn-danger">
+                        Déconnexion
+                    </a>
+                </div>
+
+                <!-- Menu mobile -->
+                <button class="mobile-menu-toggle" aria-expanded="false" aria-controls="mobile-menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Menu mobile -->
+    <div id="mobile-menu" class="mobile-menu">
+        <div class="mobile-menu-content">
+            <a href="categories.html" class="mobile-nav-link">Catégories</a>
+            <a href="vendre.html" class="mobile-nav-link">Vendre sur VotreMarché</a>
+            <a href="aide.html" class="mobile-nav-link">Aide</a>
+        </div>
+    </div>
+
+    <main id="main-content" class="profile-main">
+        <div class="container">
+            <h1 class="profile-title">Mon Tableau de Bord</h1>
+
+            <div class="profile-grid">
+                <!-- Sidebar -->
+                <aside class="profile-sidebar">
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <img src="src/img/logo.jpg" alt="Logo VotreMarché" class="profile-avatar" loading="eager" width="80" height="80">
+                            <h2 class="profile-greeting">Bonjour, <span id="username">Jean Dupont</span> !</h2>
+                        </div>
+                        
+                        <nav class="profile-nav">
+                            <a href="#mes-commandes" 
+                               class="dashboard-link active"
+                               data-target="orders">
+                                <i class="fas fa-shopping-bag"></i>
+                                Mes Commandes
+                            </a>
+                            <a href="#mes-informations" 
+                               class="dashboard-link"
+                               data-target="profile">
+                                <i class="fas fa-user"></i>
+                                Mes Informations
+                            </a>
+                            <a href="#mes-adresses" 
+                               class="dashboard-link"
+                               data-target="addresses">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Mes Adresses
+                            </a>
+                            <a href="#mes-favoris" 
+                               class="dashboard-link"
+                               data-target="favorites">
+                                <i class="fas fa-heart"></i>
+                                Mes Favoris
+                            </a>
+                            <a href="#parametres" 
+                               class="dashboard-link"
+                               data-target="settings">
+                                <i class="fas fa-cog"></i>
+                                Paramètres
+                            </a>
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- Contenu principal -->
+                <div class="profile-content">
+                    <!-- Section Mes Commandes -->
+                    <section id="orders" class="profile-section active">
+                        <div class="section-header">
+                            <h2 class="section-title">Mes Commandes</h2>
+                            <p class="section-description">Suivez l'état de vos commandes et consultez l'historique</p>
+                        </div>
+
+                        <div class="orders-list" id="orders-list">
+                            <div style="text-align:center;padding:48px 24px;color:#64748b;">
+                                <i class="fas fa-shopping-bag" style="font-size:48px;margin-bottom:16px;display:block;"></i>
+                                <p>Vous n'avez pas encore de commandes.</p>
+                                <a href="categories.html" class="btn btn-primary" style="margin-top:12px;">
+                                    <i class="fas fa-store"></i> Parcourir les produits
+                                </a>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Section Mes Informations -->
+                    <section id="profile" class="profile-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Mes Informations</h2>
+                            <p class="section-description">Gérez vos informations personnelles</p>
+                        </div>
+
+                        <div class="profile-form">
+                            <form action="/update-profile" method="POST">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="first_name" class="form-label">Prénom</label>
+                                        <input type="text" id="first_name" name="first_name" class="form-input" value="Jean">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="last_name" class="form-label">Nom</label>
+                                        <input type="text" id="last_name" name="last_name" class="form-input" value="Dupont">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" id="email" name="email" class="form-input" value="jean.dupont@email.com">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="phone" class="form-label">Téléphone</label>
+                                    <input type="tel" id="phone" name="phone" class="form-input" value="+242 06 123 456">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="birth_date" class="form-label">Date de naissance</label>
+                                    <input type="date" id="birth_date" name="birth_date" class="form-input" value="1990-01-01">
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">Sauvegarder les modifications</button>
+                                </div>
+                            </form>
+                        </div>
+                    </section>
+
+                    <!-- Section Mes Adresses -->
+                    <section id="addresses" class="profile-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Mes Adresses</h2>
+                            <p class="section-description">Gérez vos adresses de livraison</p>
+                        </div>
+
+                        <div class="addresses-list">
+                            <div class="address-card">
+                                <div class="address-header">
+                                    <h3 class="address-title">Adresse principale</h3>
+                                    <div class="address-actions">
+                                        <button class="btn btn-outline btn-sm">Modifier</button>
+                                        <button class="btn btn-danger btn-sm">Supprimer</button>
+                                    </div>
+                                </div>
+                                <div class="address-content">
+                                    <p class="address-text">
+                                        Jean Dupont<br>
+                                        123 Avenue de la Paix<br>
+                                        Quartier Bacongo<br>
+                                        Brazzaville, Congo
+                                    </p>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary">
+                                <i class="fas fa-plus"></i>
+                                Ajouter une adresse
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- Section Mes Favoris -->
+                    <section id="favorites" class="profile-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Mes Favoris</h2>
+                            <p class="section-description">Retrouvez vos produits favoris</p>
+                        </div>
+
+                        <div class="favorites-grid">
+                            <div class="favorite-card">
+                                <img src="src/img/logo.jpg" style="opacity:0.3;height:60px;" alt="Produit favori" class="favorite-image">
+                                <div class="favorite-content">
+                                    <h3 class="favorite-title">Nom du Produit</h3>
+                                    <p class="favorite-price">25 000 FCFA</p>
+                                    <div class="favorite-actions">
+                                        <button class="btn btn-primary btn-sm">Ajouter au panier</button>
+                                        <button class="btn btn-outline btn-sm">Voir détails</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Section Paramètres -->
+                    <section id="settings" class="profile-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Paramètres</h2>
+                            <p class="section-description">Gérez vos préférences et paramètres de compte</p>
+                        </div>
+
+                        <div class="settings-list">
+                            <div class="setting-group">
+                                <h3 class="setting-title">Notifications</h3>
+                                <div class="setting-options">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" class="form-checkbox" checked>
+                                        <span class="checkbox-text">Notifications par email</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" class="form-checkbox" checked>
+                                        <span class="checkbox-text">Notifications SMS</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" class="form-checkbox">
+                                        <span class="checkbox-text">Newsletter</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="setting-group">
+                                <h3 class="setting-title">Sécurité</h3>
+                                <div class="setting-actions">
+                                    <button class="btn btn-outline">Changer le mot de passe</button>
+                                    <button class="btn btn-outline">Activer l'authentification à deux facteurs</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h4 class="footer-title">VotreMarché</h4>
+                    <ul class="footer-links">
+                        <li><a href="a-propos.html" class="footer-link">À propos de nous</a></li>
+                        <li><a href="vendre.html" class="footer-link">Devenir Vendeur</a></li>
+                        <li><a href="faq.html" class="footer-link">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Aide & Support</h4>
+                    <ul class="footer-links">
+                        <li><a href="contact.html" class="footer-link">Nous contacter</a></li>
+                        <li><a href="conditions.html" class="footer-link">Conditions générales</a></li>
+                        <li><a href="confidentialite.html" class="footer-link">Politique de confidentialité</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Moyens de Paiement</h4>
+                    <div class="payment-methods">
+                        <img src="src/img/airtel.png" alt="Airtel Money" class="payment-icon">
+                        <img src="src/img/mtn.png" alt="MTN Mobile Money" class="payment-icon">
+                        <img src="src/img/visa.png" alt="Visa" class="payment-icon">
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Suivez-nous</h4>
+                    <div class="social-links">
+                        <a href="#" class="social-link" aria-label="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    </div>
+                    <div class="newsletter-section">
+                        <h5 class="newsletter-title">Newsletter</h5>
+                        <form class="newsletter-form">
+                            <input type="email" 
+                                   placeholder="Votre email" 
+                                   class="newsletter-input"
+                                   aria-label="Adresse email pour la newsletter">
+                            <button type="submit" 
+                                    class="newsletter-button"
+                                    aria-label="S'inscrire à la newsletter">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 VotreMarché. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script>
+    const API = 'http://localhost:3001/api';
+    function getToken() { return localStorage.getItem('vm_token') || ''; }
+    function apiHeaders() { return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() }; }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Charger l'utilisateur (API en priorité, localStorage en fallback)
+        let user = null;
+        const token = getToken();
+        if (token) {
+            try {
+                const res = await fetch(API + '/auth/me', { headers: apiHeaders() });
+                if (res.ok) user = (await res.json()).user;
+            } catch {}
+        }
+        if (!user) {
+            try { user = JSON.parse(localStorage.getItem('vm_current_user')); } catch {}
+        }
+
+        if (!user) { window.location.href = 'connexion.html'; return; }
+
+        // Rediriger les vendeurs vers leur tableau de bord
+        if (user.role === 'seller') {
+            window.location.href = 'profil-vendeur.html';
+            return;
+        }
+
+        // Remplir les informations
+        const usernameEl = document.getElementById('username');
+        if (usernameEl) usernameEl.textContent = user.fullName;
+        if (document.getElementById('first_name')) {
+            const parts = (user.fullName || '').split(' ');
+            document.getElementById('first_name').value = parts[0] || '';
+            document.getElementById('last_name').value = parts.slice(1).join(' ') || '';
+        }
+        if (document.getElementById('email')) document.getElementById('email').value = user.email || '';
+        if (document.getElementById('phone')) document.getElementById('phone').value = user.phone || '';
+
+        // Charger les commandes depuis l'API
+        if (token) {
+            try {
+                const res = await fetch(API + '/orders', { headers: apiHeaders() });
+                if (res.ok) {
+                    const { orders } = await res.json();
+                    renderOrders(orders || []);
+                }
+            } catch {}
+        }
+
+        // Navigation dashboard
+        document.querySelectorAll('.dashboard-link[data-target]').forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                document.querySelectorAll('.dashboard-link').forEach(l => l.classList.remove('active'));
+                document.querySelectorAll('.profile-section').forEach(s => s.classList.remove('active'));
+                link.classList.add('active');
+                const s = document.getElementById(link.dataset.target);
+                if (s) s.classList.add('active');
+            });
+        });
+
+        // Sauvegarder le profil
+        const profileForm = document.querySelector('form[action="/update-profile"]');
+        if (profileForm) {
+            profileForm.addEventListener('submit', async e => {
+                e.preventDefault();
+                const fullName = ((document.getElementById('first_name')?.value || '') + ' ' + (document.getElementById('last_name')?.value || '')).trim();
+                const phone = document.getElementById('phone')?.value || '';
+                try {
+                    const res = await fetch(API + '/auth/update', {
+                        method: 'PUT', headers: apiHeaders(),
+                        body: JSON.stringify({ fullName, phone })
+                    });
+                    const data = await res.json();
+                    if (res.ok) {
+                        Utils.showNotification('Profil mis à jour !', 'success');
+                        if (document.getElementById('username')) document.getElementById('username').textContent = data.user.fullName;
+                        try { localStorage.setItem('vm_current_user', JSON.stringify({ ...user, ...data.user })); } catch {}
+                    } else {
+                        Utils.showNotification(data.error || 'Erreur', 'error');
+                    }
+                } catch {
+                    Utils.showNotification('Erreur de connexion au serveur', 'error');
+                }
+            });
+        }
+    });
+
+    function renderOrders(orders) {
+        const list = document.getElementById('orders-list');
+        if (!list) return;
+        if (!orders.length) return; // garde l'état vide déjà en place
+        list.innerHTML = orders.map(o => `
+            <div class="order-card">
+                <div class="order-header">
+                    <div class="order-info">
+                        <h3 class="order-number">Commande #VM-${String(o.id).padStart(4,'0')}</h3>
+                        <p class="order-date">${new Date(o.createdAt).toLocaleDateString('fr-FR')}</p>
+                    </div>
+                    <div class="order-status ${o.status === 'Livrée' ? 'delivered' : 'processing'}">
+                        <span class="status-badge">${o.status}</span>
+                    </div>
+                </div>
+                <div class="order-items">
+                    ${(o.items || []).slice(0,2).map(item => `
+                        <div class="order-item">
+                            <div class="order-item-details">
+                                <h4 class="order-item-title">${item.productName}</h4>
+                                <p class="order-item-price">${item.price.toLocaleString('fr-FR')} FCFA</p>
+                            </div>
+                            <div class="order-item-quantity"><span>× ${item.quantity}</span></div>
+                        </div>`).join('')}
+                </div>
+                <div class="order-footer">
+                    <div class="order-total"><span>Total : ${o.total.toLocaleString('fr-FR')} FCFA</span></div>
+                </div>
+            </div>`).join('');
+    }
+    </script>
+</body>
+</html>
