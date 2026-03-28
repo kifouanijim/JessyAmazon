@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const db = require('../database');
 const { authenticate, JWT_SECRET } = require('../middleware/auth');
 
@@ -165,6 +166,83 @@ router.put('/change-password', authenticate, (req, res) => {
 
         res.json({ message: 'Mot de passe modifié avec succès' });
     } catch (err) {
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+// ─────────────────────────────────────────────
+// POST /api/auth/forgot-password — Demande de réinitialisation
+// ─────────────────────────────────────────────
+router.post('/forgot-password', (req, res) => {
+    const { emailOrPhone } = req.body;
+    if (!emailOrPhone) {
+        return res.status(400).json({ error: 'Email ou téléphone requis' });
+    }
+
+    try {
+        const user = db.prepare('SELECT id, email, phone, fullName FROM users WHERE email = ? OR phone = ?')
+            .get(emailOrPhone, emailOrPhone);
+
+        // Toujours répondre OK pour ne pas révéler si le compte existe
+        if (!user) {
+            return res.json({ message: 'Si ce compte existe, un code de réinitialisation a été généré.' });
+        }
+
+        // Invalider les anciens tokens de cet utilisateur
+        db.prepare('UPDATE password_reset_tokens SET used = 1 WHERE userId = ?').run(user.id);
+
+        // Générer un token à 6 chiffres (demo) — en prod ce serait envoyé par email/SMS
+        const token = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString(); // 15 min
+
+        db.prepare('INSERT INTO password_reset_tokens (userId, token, expiresAt) VALUES (?, ?, ?)')
+            .run(user.id, token, expiresAt);
+
+        // En production : envoyer par email/SMS. Ici on retourne le token pour la démo.
+        res.json({
+            message: 'Code de réinitialisation généré.',
+            resetToken: token, // ⚠ À retirer en production — envoyer par email/SMS
+            expiresIn: '15 minutes'
+        });
+    } catch (err) {
+        console.error('Erreur forgot-password:', err);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+// ─────────────────────────────────────────────
+// POST /api/auth/reset-password — Réinitialisation avec le code
+// ─────────────────────────────────────────────
+router.post('/reset-password', (req, res) => {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+        return res.status(400).json({ error: 'Code et nouveau mot de passe requis' });
+    }
+
+    const pwdError = validatePassword(newPassword);
+    if (pwdError) return res.status(400).json({ error: pwdError });
+
+    try {
+        const resetToken = db.prepare(
+            'SELECT * FROM password_reset_tokens WHERE token = ? AND used = 0'
+        ).get(token);
+
+        if (!resetToken) {
+            return res.status(400).json({ error: 'Code invalide ou déjà utilisé' });
+        }
+
+        if (new Date(resetToken.expiresAt) < new Date()) {
+            return res.status(400).json({ error: 'Code expiré. Faites une nouvelle demande.' });
+        }
+
+        const hashed = bcrypt.hashSync(newPassword, 12);
+        db.prepare('UPDATE users SET password = ? WHERE id = ?').run(hashed, resetToken.userId);
+        db.prepare('UPDATE password_reset_tokens SET used = 1 WHERE id = ?').run(resetToken.id);
+
+        res.json({ message: 'Mot de passe réinitialisé avec succès. Vous pouvez vous connecter.' });
+    } catch (err) {
+        console.error('Erreur reset-password:', err);
         res.status(500).json({ error: 'Erreur serveur' });
     }
 });

@@ -1,19 +1,25 @@
 const jwt = require('jsonwebtoken');
 const db = require('../database');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'votremarche_secret_key';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+    console.error('❌ ERREUR: JWT_SECRET manquant dans .env — serveur arrêté pour des raisons de sécurité.');
+    process.exit(1);
+}
 
 /**
  * Middleware d'authentification obligatoire
  */
 function authenticate(req, res, next) {
     const authHeader = req.headers.authorization;
+    // Accepter aussi ?token= dans l'URL (pour les téléchargements directs comme les factures PDF)
+    const token = (authHeader && authHeader.startsWith('Bearer ')
+        ? authHeader.split(' ')[1]
+        : null) || req.query.token;
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    if (!token) {
         return res.status(401).json({ error: 'Authentification requise. Veuillez vous connecter.' });
     }
-
-    const token = authHeader.split(' ')[1];
 
     try {
         const payload = jwt.verify(token, JWT_SECRET);

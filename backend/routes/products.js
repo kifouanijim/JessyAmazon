@@ -147,4 +147,57 @@ router.delete('/:id', authenticate, (req, res) => {
     }
 });
 
+// GET /api/products/:id/reviews — liste des avis d'un produit
+router.get('/:id/reviews', (req, res) => {
+    try {
+        const reviews = db.prepare(`
+            SELECT r.id, r.rating, r.comment, r.createdAt,
+                   u.fullName as authorName
+            FROM reviews r
+            JOIN users u ON u.id = r.userId
+            WHERE r.productId = ?
+            ORDER BY r.createdAt DESC
+        `).all(req.params.id);
+        res.json({ reviews });
+    } catch (err) {
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+// POST /api/products/:id/reviews — ajouter un avis (connecté)
+router.post('/:id/reviews', authenticate, (req, res) => {
+    const { rating, comment } = req.body;
+    if (!rating || rating < 1 || rating > 5) {
+        return res.status(400).json({ error: 'Note entre 1 et 5 requise' });
+    }
+    try {
+        const product = db.prepare('SELECT id FROM products WHERE id = ?').get(req.params.id);
+        if (!product) return res.status(404).json({ error: 'Produit introuvable' });
+
+        const existing = db.prepare('SELECT id FROM reviews WHERE productId = ? AND userId = ?')
+            .get(req.params.id, req.user.id);
+        if (existing) {
+            return res.status(400).json({ error: 'Vous avez déjà donné un avis sur ce produit' });
+        }
+
+        db.prepare('INSERT INTO reviews (productId, userId, rating, comment) VALUES (?, ?, ?, ?)')
+            .run(req.params.id, req.user.id, rating, comment || '');
+
+        // Recalculer la note moyenne du produit
+        const stats = db.prepare('SELECT AVG(rating) as avg, COUNT(*) as count FROM reviews WHERE productId = ?').get(req.params.id);
+        db.prepare('UPDATE products SET rating = ?, reviewCount = ? WHERE id = ?')
+            .run(Math.round(stats.avg * 10) / 10, stats.count, req.params.id);
+
+        const review = db.prepare(`
+            SELECT r.id, r.rating, r.comment, r.createdAt, u.fullName as authorName
+            FROM reviews r JOIN users u ON u.id = r.userId
+            WHERE r.productId = ? AND r.userId = ?
+        `).get(req.params.id, req.user.id);
+        res.status(201).json({ review });
+    } catch (err) {
+        console.error('Erreur avis:', err);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
 module.exports = router;

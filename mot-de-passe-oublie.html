@@ -61,16 +61,24 @@
             <div class="inline-flex items-center justify-center w-16 h-16 bg-green-500/20 border-2 border-green-500 rounded-full mb-4">
                 <i class="fas fa-envelope-open-text text-green-400 text-2xl"></i>
             </div>
-            <h2 class="text-2xl font-bold mb-3">Code envoyé !</h2>
-            <p class="text-slate-400 mb-6">Un SMS/email avec les instructions de réinitialisation a été envoyé à <span id="sent-to" class="text-vm-accent font-medium"></span></p>
-            <p class="text-slate-500 text-sm mb-6">Vous n'avez pas reçu le message ? Vérifiez vos spams ou réessayez dans quelques minutes.</p>
+            <h2 class="text-2xl font-bold mb-3">Code généré !</h2>
+            <p class="text-slate-400 mb-4 text-sm">Compte : <span id="sent-to" class="text-vm-accent font-medium"></span></p>
+
+            <!-- Boîte code démo (masquée en prod) -->
+            <div id="demo-code-box" class="hidden bg-slate-700/50 border border-vm-accent/40 rounded-xl p-4 mb-5 text-left">
+                <p class="text-xs text-slate-400 mb-2 uppercase tracking-wide">⚠ Mode démo — en production ce code serait envoyé par SMS/email</p>
+                <p class="text-sm text-slate-300 mb-1">Votre code de réinitialisation :</p>
+                <p id="demo-code" class="text-3xl font-bold text-vm-accent tracking-widest text-center py-2"></p>
+                <p class="text-xs text-slate-500 text-center mt-1">Valable 15 minutes</p>
+            </div>
+
             <div class="space-y-3">
+                <a href="reinitialiser-mot-de-passe.html" class="block w-full py-2 bg-vm-accent text-black rounded-lg font-semibold hover:scale-105 transition text-center">
+                    <i class="fas fa-key mr-1"></i> Utiliser le code
+                </a>
                 <button onclick="resetForm()" class="w-full py-2 border border-slate-600 rounded-lg hover:bg-slate-700 transition text-sm">
                     Réessayer avec un autre identifiant
                 </button>
-                <a href="connexion.html" class="block w-full py-2 bg-vm-accent text-black rounded-lg font-semibold hover:scale-105 transition text-center">
-                    Retour à la connexion
-                </a>
             </div>
         </div>
 
@@ -82,19 +90,54 @@
 
 <script src="js/script.js"></script>
 <script>
-    document.getElementById('reset-form').addEventListener('submit', function(e) {
+    const API = 'http://localhost:3001/api';
+
+    document.getElementById('reset-form').addEventListener('submit', async function(e) {
         e.preventDefault();
         const val = document.getElementById('email_phone').value.trim();
         if (!val) return;
-        document.getElementById('sent-to').textContent = val;
-        document.getElementById('form-state').classList.add('hidden');
-        document.getElementById('success-state').classList.remove('hidden');
+
+        const btn = this.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.textContent = 'Envoi en cours...';
+
+        try {
+            const res = await fetch(API + '/auth/forgot-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ emailOrPhone: val })
+            });
+            const data = await res.json();
+
+            if (!res.ok) {
+                btn.disabled = false;
+                btn.textContent = 'Envoyer le code de réinitialisation';
+                alert(data.error || 'Une erreur est survenue');
+                return;
+            }
+
+            document.getElementById('sent-to').textContent = val;
+
+            // Afficher le code (mode démo — en prod ce serait envoyé par email/SMS)
+            if (data.resetToken) {
+                document.getElementById('demo-code-box').classList.remove('hidden');
+                document.getElementById('demo-code').textContent = data.resetToken;
+            }
+
+            document.getElementById('form-state').classList.add('hidden');
+            document.getElementById('success-state').classList.remove('hidden');
+        } catch {
+            btn.disabled = false;
+            btn.textContent = 'Envoyer le code de réinitialisation';
+            alert('Erreur réseau. Vérifiez que le serveur est démarré.');
+        }
     });
 
     function resetForm() {
         document.getElementById('form-state').classList.remove('hidden');
         document.getElementById('success-state').classList.add('hidden');
         document.getElementById('email_phone').value = '';
+        document.getElementById('demo-code-box').classList.add('hidden');
     }
 </script>
 </body>

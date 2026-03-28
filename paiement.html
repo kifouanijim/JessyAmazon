@@ -153,6 +153,7 @@
                             <p>Sous-total articles : <strong id="summary-subtotal">0 FCFA</strong></p>
                             <p>Livraison : <strong id="summary-shipping">2 500 FCFA</strong></p>
                             <p class="total-final">Total à payer : <strong id="summary-total">0 FCFA</strong></p>
+                            <p id="promo-discount-line" style="display:none;color:#22c55e;">Réduction code promo : <strong id="summary-discount">0 FCFA</strong></p>
 
                             <h4>Adresse de livraison :</h4>
                             <p id="summary-address">Sera remplie automatiquement.</p>
@@ -160,6 +161,19 @@
                             <h4>Mode de paiement :</h4>
                             <p id="summary-payment">Sera rempli automatiquement.</p>
                         </div>
+                            <!-- Code promo -->
+                            <div style="margin:20px 0;padding:16px;border:1px solid #334155;border-radius:8px;background:#1e293b;">
+                                <h4 style="margin-bottom:12px;">Code promo</h4>
+                                <div style="display:flex;gap:8px;">
+                                    <input type="text" id="promo-input" placeholder="Entrez votre code"
+                                           style="flex:1;padding:8px 12px;border-radius:6px;background:#0f172a;border:1px solid #334155;color:#fff;"
+                                           oninput="this.value=this.value.toUpperCase()">
+                                    <button type="button" id="apply-promo-btn" class="btn btn-outline btn-sm">
+                                        Appliquer
+                                    </button>
+                                </div>
+                                <div id="promo-result" style="margin-top:8px;font-size:13px;display:none;"></div>
+                            </div>
                         <button type="button" class="btn btn-secondary prev-step" data-prev-step="step-payment">Retour</button>
                         <button type="submit" class="btn btn-success confirm-order-btn">Confirmer la commande et payer</button>
                     </div>
@@ -199,5 +213,23 @@
     </footer>
 
     <script src="js/script.js"></script>
+
+<!-- Modal simulation paiement mobile -->
+<div id="payment-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:1000;align-items:center;justify-content:center;">
+    <div style="background:#1e293b;border:1px solid #334155;border-radius:16px;padding:32px;max-width:400px;width:90%;text-align:center;">
+        <div id="modal-logo" style="font-size:48px;margin-bottom:16px;"></div>
+        <h3 id="modal-title" style="color:#fff;margin-bottom:8px;"></h3>
+        <p id="modal-amount" style="color:#f2c335;font-size:22px;font-weight:bold;margin-bottom:8px;"></p>
+        <p id="modal-instruction" style="color:#94a3b8;font-size:13px;margin-bottom:24px;"></p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+            <button id="modal-confirm-btn" style="padding:12px;background:#22c55e;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer;">
+                ✓ Confirmer le paiement (simulation)
+            </button>
+            <button id="modal-cancel-btn" style="padding:10px;background:transparent;color:#94a3b8;border:1px solid #334155;border-radius:8px;cursor:pointer;">
+                Annuler
+            </button>
+        </div>
+    </div>
+</div>
 </body>
 </html>

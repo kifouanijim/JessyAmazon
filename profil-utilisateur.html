@@ -185,28 +185,7 @@
                         </div>
 
                         <div class="addresses-list">
-                            <div class="address-card">
-                                <div class="address-header">
-                                    <h3 class="address-title">Adresse principale</h3>
-                                    <div class="address-actions">
-                                        <button class="btn btn-outline btn-sm">Modifier</button>
-                                        <button class="btn btn-danger btn-sm">Supprimer</button>
-                                    </div>
-                                </div>
-                                <div class="address-content">
-                                    <p class="address-text">
-                                        Jean Dupont<br>
-                                        123 Avenue de la Paix<br>
-                                        Quartier Bacongo<br>
-                                        Brazzaville, Congo
-                                    </p>
-                                </div>
-                            </div>
-
-                            <button class="btn btn-primary">
-                                <i class="fas fa-plus"></i>
-                                Ajouter une adresse
-                            </button>
+                            <!-- Chargé dynamiquement par ProfilePage.loadAddresses() -->
                         </div>
                     </section>
 
@@ -216,19 +195,8 @@
                             <h2 class="section-title">Mes Favoris</h2>
                             <p class="section-description">Retrouvez vos produits favoris</p>
                         </div>
-
-                        <div class="favorites-grid">
-                            <div class="favorite-card">
-                                <img src="src/img/logo.jpg" style="opacity:0.3;height:60px;" alt="Produit favori" class="favorite-image">
-                                <div class="favorite-content">
-                                    <h3 class="favorite-title">Nom du Produit</h3>
-                                    <p class="favorite-price">25 000 FCFA</p>
-                                    <div class="favorite-actions">
-                                        <button class="btn btn-primary btn-sm">Ajouter au panier</button>
-                                        <button class="btn btn-outline btn-sm">Voir détails</button>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="favorites-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;">
+                            <!-- Chargé dynamiquement par ProfilePage.loadFavorites() -->
                         </div>
                     </section>
 
@@ -421,6 +389,16 @@
                 }
             });
         }
+    });
+
+    // Déconnexion
+    document.querySelectorAll('a[href="deconnexion.html"]').forEach(link => {
+        link.addEventListener('click', e => {
+            e.preventDefault();
+            localStorage.removeItem('vm_token');
+            localStorage.removeItem('vm_current_user');
+            window.location.href = 'connexion.html';
+        });
     });
 
     function renderOrders(orders) {

@@ -209,13 +209,89 @@ class CartManager {
     }
 
     _loadCart() {
-        try {
-            return JSON.parse(localStorage.getItem('vm_cart') || '[]');
-        } catch { return []; }
+        try { return JSON.parse(localStorage.getItem('vm_cart') || '[]'); }
+        catch { return []; }
     }
 
     _saveCart() {
         localStorage.setItem('vm_cart', JSON.stringify(this.cart));
+    }
+
+    _token() {
+        return localStorage.getItem('vm_token') || '';
+    }
+
+    _isLoggedIn() {
+        return !!this._token();
+    }
+
+    async _apiPost(product) {
+        if (!this._isLoggedIn()) return;
+        try {
+            await fetch(API_BASE + '/cart', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this._token() },
+                body: JSON.stringify({
+                    productId: String(product.id),
+                    productName: product.name,
+                    price: product.price,
+                    quantity: product.quantity || 1,
+                    sellerName: product.seller || ''
+                })
+            });
+        } catch {}
+    }
+
+    async _apiDelete(productId) {
+        if (!this._isLoggedIn()) return;
+        try {
+            await fetch(API_BASE + '/cart/' + productId, {
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + this._token() }
+            });
+        } catch {}
+    }
+
+    async _apiPut(productId, quantity) {
+        if (!this._isLoggedIn()) return;
+        try {
+            await fetch(API_BASE + '/cart/' + productId, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this._token() },
+                body: JSON.stringify({ quantity })
+            });
+        } catch {}
+    }
+
+    async _apiClear() {
+        if (!this._isLoggedIn()) return;
+        try {
+            await fetch(API_BASE + '/cart', {
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + this._token() }
+            });
+        } catch {}
+    }
+
+    // Charge le panier depuis l'API (priorité sur localStorage)
+    async syncFromAPI() {
+        if (!this._isLoggedIn()) return;
+        try {
+            const res = await fetch(API_BASE + '/cart', {
+                headers: { 'Authorization': 'Bearer ' + this._token() }
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            this.cart = (data.items || []).map(item => ({
+                id: item.productId,
+                name: item.productName,
+                price: item.price,
+                quantity: item.quantity,
+                seller: item.sellerName || 'VotreMarché'
+            }));
+            this._saveCart();
+            this.updateCartDisplay();
+        } catch {}
     }
 
     addToCart(product) {
@@ -227,6 +303,7 @@ class CartManager {
         }
         this._saveCart();
         this.updateCartDisplay();
+        this._apiPost(product);
         Utils.showNotification(`"${product.name}" ajouté au panier !`, 'success');
     }
 
@@ -234,6 +311,7 @@ class CartManager {
         this.cart = this.cart.filter(item => item.id !== productId);
         this._saveCart();
         this.updateCartDisplay();
+        this._apiDelete(productId);
     }
 
     updateQuantity(productId, quantity) {
@@ -242,6 +320,7 @@ class CartManager {
             item.quantity = Math.max(1, quantity);
             this._saveCart();
             this.updateCartDisplay();
+            this._apiPut(productId, item.quantity);
         }
     }
 
@@ -257,11 +336,11 @@ class CartManager {
         this.cart = [];
         this._saveCart();
         this.updateCartDisplay();
+        this._apiClear();
     }
 
     updateCartDisplay() {
         const count = this.getItemCount();
-        // Handle all cart badge types
         document.querySelectorAll('a[href="panier.html"] span, .cart-badge, .cart-count').forEach(badge => {
             badge.textContent = count;
         });
@@ -503,22 +582,64 @@ class ProductsPage {
         if (!this.grid) return;
 
         const params = new URLSearchParams(window.location.search);
-        this.cat = params.get('cat') || 'electronique';
+        this.cat = params.get('cat') || '';
+        this.search = params.get('search') || '';
         this.sortBy = 'default';
         this.init();
     }
 
-    getProducts() {
-        let cats = CAT_PARENTS[this.cat] ? CAT_PARENTS[this.cat] : [this.cat];
-        let products = PRODUCTS_DB.filter(p => cats.includes(p.cat));
-        if (this.sortBy === 'price-asc') products.sort((a, b) => a.price - b.price);
-        else if (this.sortBy === 'price-desc') products.sort((a, b) => b.price - a.price);
-        else if (this.sortBy === 'rating') products.sort((a, b) => b.rating - a.rating);
+    _normalize(p) {
+        return {
+            id: String(p.id),
+            name: p.name,
+            cat: p.category,
+            price: p.price,
+            originalPrice: p.originalPrice || p.price,
+            seller: p.sellerName || 'VotreMarché',
+            rating: p.rating || 4.0,
+            reviews: p.reviewCount || 0,
+            img: p.imageUrl || '',
+            stock: p.stock
+        };
+    }
+
+    async fetchProducts() {
+        // Mode recherche — tous les produits correspondants
+        if (this.search) {
+            try {
+                const res = await fetch(`${API_BASE}/products?search=${encodeURIComponent(this.search)}&limit=100`);
+                if (!res.ok) return [];
+                const data = await res.json();
+                return (data.products || []).map(p => this._normalize(p));
+            } catch { return []; }
+        }
+
+        // Mode catégorie
+        const cat = this.cat || 'electronique';
+        const cats = CAT_PARENTS[cat] ? CAT_PARENTS[cat] : [cat];
+        let all = [];
+        for (const c of cats) {
+            try {
+                const res = await fetch(`${API_BASE}/products?category=${encodeURIComponent(c)}&limit=100`);
+                if (!res.ok) continue;
+                const data = await res.json();
+                all = all.concat(data.products || []);
+            } catch {}
+        }
+        return all.map(p => this._normalize(p));
+    }
+
+    _sort(products) {
+        if (this.sortBy === 'price-asc') return [...products].sort((a, b) => a.price - b.price);
+        if (this.sortBy === 'price-desc') return [...products].sort((a, b) => b.price - a.price);
+        if (this.sortBy === 'rating') return [...products].sort((a, b) => b.rating - a.rating);
         return products;
     }
 
     renderCard(product) {
-        const discount = Math.round((1 - product.price / product.originalPrice) * 100);
+        const discount = product.originalPrice > product.price
+            ? Math.round((1 - product.price / product.originalPrice) * 100)
+            : 0;
         const catIcons = {
             smartphones: 'fa-mobile-alt', ordinateurs: 'fa-laptop', televisions: 'fa-tv',
             'fruits-legumes': 'fa-apple-alt', 'viandes-poissons': 'fa-fish', epicerie: 'fa-shopping-basket',
@@ -529,12 +650,19 @@ class ProductsPage {
         const imgHtml = product.img
             ? `<img src="${product.img}" alt="${product.name}" class="absolute inset-0 w-full h-full object-cover" loading="lazy" onerror="this.style.display='none'">`
             : '';
+        const discountBadge = discount > 0
+            ? `<span class="absolute top-2 right-2 bg-vm-accent text-black text-xs font-bold px-2 py-1 rounded-full" style="z-index:1;">-${discount}%</span>`
+            : '';
+        const outOfStock = product.stock === 0
+            ? `<span class="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full" style="z-index:1;">Rupture</span>`
+            : '';
         return `
             <div class="bg-slate-800/50 border border-slate-700 rounded-xl overflow-hidden hover:border-vm-accent transition-all duration-300 hover:scale-[1.02] flex flex-col">
                 <div class="relative bg-slate-700/50 h-44 flex items-center justify-center overflow-hidden">
                     <i class="fas ${icon} text-vm-accent" style="font-size:48px;opacity:0.4;"></i>
                     ${imgHtml}
-                    <span class="absolute top-2 right-2 bg-vm-accent text-black text-xs font-bold px-2 py-1 rounded-full" style="z-index:1;">-${discount}%</span>
+                    ${discountBadge}
+                    ${outOfStock}
                 </div>
                 <div class="p-4 flex flex-col flex-grow">
                     <h3 class="font-semibold text-white mb-1 text-sm leading-tight line-clamp-2">${product.name}</h3>
@@ -546,13 +674,14 @@ class ProductsPage {
                     <div class="mt-auto">
                         <div class="flex items-center gap-2 mb-3">
                             <span class="text-vm-accent font-bold">${Utils.formatCurrency(product.price)}</span>
-                            <span class="text-slate-500 text-xs line-through">${Utils.formatCurrency(product.originalPrice)}</span>
+                            ${product.originalPrice > product.price ? `<span class="text-slate-500 text-xs line-through">${Utils.formatCurrency(product.originalPrice)}</span>` : ''}
                         </div>
                         <button
                             class="w-full py-2 bg-vm-accent text-black rounded-lg text-sm font-semibold hover:scale-105 transition btn-add-to-cart"
                             data-id="${product.id}" data-name="${product.name}"
-                            data-price="${product.price}" data-seller="${product.seller}">
-                            <i class="fas fa-cart-plus mr-1"></i> Ajouter au panier
+                            data-price="${product.price}" data-seller="${product.seller}"
+                            ${product.stock === 0 ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>
+                            <i class="fas fa-cart-plus mr-1"></i> ${product.stock === 0 ? 'Indisponible' : 'Ajouter au panier'}
                         </button>
                     </div>
                 </div>
@@ -561,16 +690,16 @@ class ProductsPage {
     }
 
     init() {
-        const catName = CAT_NAMES[this.cat] || this.cat;
+        const catName = this.search
+            ? `Résultats pour "${this.search}"`
+            : (CAT_NAMES[this.cat] || this.cat || 'Produits');
         const titleEl = document.getElementById('page-title');
         if (titleEl) titleEl.textContent = catName;
         document.title = catName + ' - VotreMarché';
 
-        // Breadcrumb
         const breadcrumbCat = document.getElementById('breadcrumb-cat');
         if (breadcrumbCat) breadcrumbCat.textContent = catName;
 
-        // Sort listener
         const sortEl = document.getElementById('sort-select');
         if (sortEl) {
             sortEl.addEventListener('change', () => {
@@ -582,8 +711,16 @@ class ProductsPage {
         this.renderProducts();
     }
 
-    renderProducts() {
-        const products = this.getProducts();
+    async renderProducts() {
+        // Loader
+        this.grid.innerHTML = `
+            <div class="col-span-full text-center py-16 text-slate-400">
+                <i class="fas fa-spinner fa-spin text-4xl mb-4 block text-vm-accent"></i>
+                <p>Chargement des produits...</p>
+            </div>`;
+
+        const products = this._sort(await this.fetchProducts());
+
         const countEl = document.getElementById('product-count');
         if (countEl) countEl.textContent = `${products.length} produit${products.length !== 1 ? 's' : ''}`;
 
@@ -592,6 +729,7 @@ class ProductsPage {
                 <div class="col-span-full text-center py-16 text-slate-400">
                     <i class="fas fa-box-open text-5xl mb-4 block opacity-50"></i>
                     <p class="text-xl">Aucun produit dans cette catégorie pour le moment</p>
+                    <p class="text-sm mt-2">Les vendeurs n'ont pas encore ajouté de produits ici.</p>
                     <a href="categories.html" class="inline-block mt-4 px-6 py-2 bg-vm-accent text-black rounded-lg font-semibold">Voir toutes les catégories</a>
                 </div>`;
             return;
@@ -714,7 +852,7 @@ class ProfilePage {
         this.init();
     }
 
-    init() {
+    async init() {
         const user = authManager?.currentUser;
         if (!user) {
             Utils.showNotification('Veuillez vous connecter pour accéder à votre profil', 'error');
@@ -722,12 +860,15 @@ class ProfilePage {
             return;
         }
         this.populateUserData(user);
-        this.setupTabs();
+        this.setupDashboardNav();
+        await this.loadOrders();
+        await this.loadFavorites();
+        await this.loadAddresses();
     }
 
     populateUserData(user) {
         const fields = {
-            '.user-name, .profile-name, #profile-name': user.fullName,
+            '#username, .user-name, .profile-name, #profile-name': user.fullName,
             '.user-email, .profile-email, #profile-email': user.email,
             '.user-phone, .profile-phone, #profile-phone': user.phone || 'Non renseigné',
             '.user-address, .profile-address, #profile-address': user.address || 'Non renseigné',
@@ -736,7 +877,6 @@ class ProfilePage {
         Object.entries(fields).forEach(([sel, val]) => {
             document.querySelectorAll(sel).forEach(el => el.textContent = val);
         });
-        // Prefill edit forms
         const nameInput = document.getElementById('edit-name');
         const emailInput = document.getElementById('edit-email');
         const phoneInput = document.getElementById('edit-phone');
@@ -745,16 +885,266 @@ class ProfilePage {
         if (phoneInput) phoneInput.value = user.phone || '';
     }
 
-    setupTabs() {
-        document.querySelectorAll('.tab-button').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-                btn.classList.add('active');
-                const target = document.getElementById(btn.dataset.tab);
-                if (target) target.classList.add('active');
+    setupDashboardNav() {
+        document.querySelectorAll('.dashboard-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = link.dataset.target;
+                document.querySelectorAll('.dashboard-link').forEach(l => l.classList.remove('active'));
+                document.querySelectorAll('.profile-section').forEach(s => s.classList.remove('active'));
+                link.classList.add('active');
+                const section = document.getElementById(target);
+                if (section) section.classList.add('active');
             });
         });
+    }
+
+    async loadOrders() {
+        const list = document.getElementById('orders-list');
+        if (!list) return;
+        const token = authManager.getToken();
+        if (!token) return;
+
+        list.innerHTML = '<div style="text-align:center;padding:32px;color:#64748b;"><i class="fas fa-spinner fa-spin" style="font-size:32px;"></i></div>';
+
+        try {
+            const res = await fetch(API_BASE + '/orders', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (!res.ok) throw new Error();
+            const { orders } = await res.json();
+
+            if (!orders.length) {
+                list.innerHTML = `
+                    <div style="text-align:center;padding:48px 24px;color:#64748b;">
+                        <i class="fas fa-shopping-bag" style="font-size:48px;margin-bottom:16px;display:block;"></i>
+                        <p>Vous n'avez pas encore de commandes.</p>
+                        <a href="categories.html" class="btn btn-primary" style="margin-top:12px;">
+                            <i class="fas fa-store"></i> Parcourir les produits
+                        </a>
+                    </div>`;
+                return;
+            }
+
+            const statusColors = {
+                'En cours': '#f59e0b', 'Confirmée': '#3b82f6',
+                'En livraison': '#8b5cf6', 'Livrée': '#22c55e', 'Annulée': '#ef4444'
+            };
+            const statusIcons = {
+                'En cours': 'fa-clock', 'Confirmée': 'fa-check-circle',
+                'En livraison': 'fa-truck', 'Livrée': 'fa-box-open', 'Annulée': 'fa-times-circle'
+            };
+
+            list.innerHTML = orders.map(order => {
+                const color = statusColors[order.status] || '#64748b';
+                const icon = statusIcons[order.status] || 'fa-circle';
+                const itemsText = (order.items || []).map(i => `${i.productName} ×${i.quantity}`).join(', ');
+                return `
+                    <div style="border:1px solid #334155;border-radius:12px;padding:20px;margin-bottom:16px;background:#1e293b;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+                            <div>
+                                <span style="font-weight:bold;color:#fff;">Commande #${order.id}</span>
+                                <span style="color:#64748b;font-size:12px;margin-left:10px;">${new Date(order.createdAt).toLocaleDateString('fr-FR')}</span>
+                            </div>
+                            <span style="background:${color}22;color:${color};border:1px solid ${color};padding:3px 12px;border-radius:20px;font-size:12px;font-weight:600;">
+                                <i class="fas ${icon}" style="margin-right:4px;"></i>${order.status}
+                            </span>
+                        </div>
+                        <p style="color:#94a3b8;font-size:13px;margin-bottom:10px;">${itemsText || 'Articles non disponibles'}</p>
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+                            <span style="color:#f2c335;font-weight:bold;">${Utils.formatCurrency(order.total)}</span>
+                            <a href="${API_BASE}/orders/${order.id}/invoice?token=${authManager.getToken()}"
+                               target="_blank"
+                               style="font-size:12px;color:#94a3b8;text-decoration:none;padding:4px 10px;border:1px solid #334155;border-radius:6px;display:inline-flex;align-items:center;gap:4px;">
+                                <i class="fas fa-file-pdf" style="color:#ef4444;"></i> Facture PDF
+                            </a>
+                        </div>
+                    </div>`;
+            }).join('');
+        } catch {
+            list.innerHTML = '<p style="color:#ef4444;text-align:center;padding:24px;">Erreur lors du chargement des commandes.</p>';
+        }
+    }
+
+    async loadFavorites() {
+        const grid = document.querySelector('.favorites-grid');
+        if (!grid) return;
+        const token = authManager.getToken();
+        if (!token) return;
+
+        grid.innerHTML = '<div style="text-align:center;padding:32px;color:#64748b;"><i class="fas fa-spinner fa-spin" style="font-size:32px;"></i></div>';
+
+        try {
+            const res = await fetch(API_BASE + '/favorites', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (!res.ok) throw new Error();
+            const { favorites } = await res.json();
+
+            if (!favorites.length) {
+                grid.innerHTML = `
+                    <div style="text-align:center;padding:48px;color:#64748b;grid-column:1/-1;">
+                        <i class="fas fa-heart" style="font-size:48px;margin-bottom:16px;display:block;opacity:0.3;"></i>
+                        <p>Vous n'avez pas encore de favoris.</p>
+                        <a href="categories.html" class="btn btn-primary" style="margin-top:12px;">Découvrir des produits</a>
+                    </div>`;
+                return;
+            }
+
+            grid.innerHTML = favorites.map(f => `
+                <div style="border:1px solid #334155;border-radius:12px;overflow:hidden;background:#1e293b;">
+                    <div style="height:120px;background:#0f172a;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+                        ${f.imageUrl
+                            ? `<img src="${f.imageUrl}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-image\\' style=\\'color:#334155;font-size:32px;\\'></i>'">`
+                            : '<i class="fas fa-image" style="color:#334155;font-size:32px;"></i>'}
+                    </div>
+                    <div style="padding:12px;">
+                        <h3 style="font-size:13px;font-weight:600;color:#fff;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${f.name}</h3>
+                        <p style="color:#f2c335;font-weight:bold;margin-bottom:10px;">${Utils.formatCurrency(f.price)}</p>
+                        <div style="display:flex;gap:8px;">
+                            <button class="btn btn-primary btn-sm fav-add-cart"
+                                data-id="${f.productId}" data-name="${f.name.replace(/"/g,'&quot;')}"
+                                data-price="${f.price}" data-seller="${f.sellerName || ''}">
+                                <i class="fas fa-cart-plus"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm fav-remove-btn" data-product-id="${f.productId}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>`).join('');
+
+            grid.querySelectorAll('.fav-add-cart').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    cartManager.addToCart({
+                        id: btn.dataset.id, name: btn.dataset.name,
+                        price: parseInt(btn.dataset.price), seller: btn.dataset.seller
+                    });
+                });
+            });
+            grid.querySelectorAll('.fav-remove-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    await fetch(`${API_BASE}/favorites/${btn.dataset.productId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': 'Bearer ' + authManager.getToken() }
+                    });
+                    this.loadFavorites();
+                });
+            });
+        } catch {
+            grid.innerHTML = '<p style="color:#ef4444;text-align:center;padding:24px;">Erreur lors du chargement des favoris.</p>';
+        }
+    }
+
+    async loadAddresses() {
+        const container = document.querySelector('.addresses-list');
+        if (!container) return;
+        const token = authManager.getToken();
+        if (!token) return;
+
+        try {
+            const res = await fetch(API_BASE + '/addresses', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (!res.ok) return;
+            const { addresses } = await res.json();
+
+            const addBtn = `
+                <button id="add-address-btn" class="btn btn-primary" style="margin-top:16px;">
+                    <i class="fas fa-plus"></i> Ajouter une adresse
+                </button>
+                <div id="add-address-form" style="display:none;margin-top:16px;padding:16px;border:1px solid #334155;border-radius:8px;background:#1e293b;">
+                    <h4 style="margin-bottom:12px;">Nouvelle adresse</h4>
+                    <div style="display:grid;gap:10px;">
+                        <input id="addr-label" placeholder="Libellé (ex: Domicile)" style="padding:8px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#fff;">
+                        <input id="addr-fullname" placeholder="Nom complet *" style="padding:8px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#fff;">
+                        <input id="addr-phone" placeholder="Téléphone *" style="padding:8px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#fff;">
+                        <input id="addr-address" placeholder="Adresse *" style="padding:8px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#fff;">
+                        <select id="addr-city" style="padding:8px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#fff;">
+                            <option value="">Ville *</option>
+                            <option value="Brazzaville">Brazzaville</option>
+                            <option value="Pointe-Noire">Pointe-Noire</option>
+                            <option value="Dolisie">Dolisie</option>
+                        </select>
+                        <label style="display:flex;align-items:center;gap:8px;color:#94a3b8;font-size:13px;">
+                            <input type="checkbox" id="addr-default"> Adresse par défaut
+                        </label>
+                        <div style="display:flex;gap:8px;">
+                            <button id="addr-save-btn" class="btn btn-primary btn-sm">Enregistrer</button>
+                            <button id="addr-cancel-btn" class="btn btn-outline btn-sm">Annuler</button>
+                        </div>
+                    </div>
+                </div>`;
+
+            if (!addresses.length) {
+                container.innerHTML = `<p style="color:#64748b;padding:24px 0;">Aucune adresse enregistrée.</p>${addBtn}`;
+            } else {
+                container.innerHTML = addresses.map(a => `
+                    <div style="border:1px solid ${a.isDefault ? '#4a634e' : '#334155'};border-radius:10px;padding:16px;margin-bottom:12px;background:#1e293b;">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                            <div>
+                                <span style="font-weight:600;color:#fff;">${a.label}</span>
+                                ${a.isDefault ? '<span style="margin-left:8px;font-size:11px;background:#4a634e;color:#fff;padding:2px 8px;border-radius:10px;">Par défaut</span>' : ''}
+                                <p style="color:#94a3b8;font-size:13px;margin-top:4px;">${a.fullName} — ${a.phone}</p>
+                                <p style="color:#94a3b8;font-size:13px;">${a.address}, ${a.city}</p>
+                            </div>
+                            <button class="btn btn-danger btn-sm addr-delete-btn" data-id="${a.id}" style="flex-shrink:0;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>`).join('') + addBtn;
+            }
+
+            // Toggle formulaire
+            document.getElementById('add-address-btn')?.addEventListener('click', () => {
+                document.getElementById('add-address-form').style.display = 'block';
+            });
+            document.getElementById('addr-cancel-btn')?.addEventListener('click', () => {
+                document.getElementById('add-address-form').style.display = 'none';
+            });
+
+            // Sauvegarder
+            document.getElementById('addr-save-btn')?.addEventListener('click', async () => {
+                const payload = {
+                    label: document.getElementById('addr-label').value || 'Domicile',
+                    fullName: document.getElementById('addr-fullname').value,
+                    phone: document.getElementById('addr-phone').value,
+                    address: document.getElementById('addr-address').value,
+                    city: document.getElementById('addr-city').value,
+                    isDefault: document.getElementById('addr-default').checked
+                };
+                if (!payload.fullName || !payload.phone || !payload.address || !payload.city) {
+                    Utils.showNotification('Remplissez tous les champs obligatoires', 'error');
+                    return;
+                }
+                const r = await fetch(API_BASE + '/addresses', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authManager.getToken() },
+                    body: JSON.stringify(payload)
+                });
+                if (r.ok) {
+                    Utils.showNotification('Adresse ajoutée !', 'success');
+                    this.loadAddresses();
+                } else {
+                    const d = await r.json();
+                    Utils.showNotification(d.error || 'Erreur', 'error');
+                }
+            });
+
+            // Supprimer
+            container.querySelectorAll('.addr-delete-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    if (!confirm('Supprimer cette adresse ?')) return;
+                    await fetch(`${API_BASE}/addresses/${btn.dataset.id}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': 'Bearer ' + authManager.getToken() }
+                    });
+                    this.loadAddresses();
+                });
+            });
+        } catch {
+            container.innerHTML = '<p style="color:#ef4444;">Erreur lors du chargement des adresses.</p>';
+        }
     }
 }
 
@@ -815,20 +1205,37 @@ class MobileNavigation {
 // === SEARCH MANAGER ===
 class SearchManager {
     constructor() {
-        this.input = document.querySelector('input[type="search"]');
+        this.inputs = document.querySelectorAll('input[type="search"]');
         this.init();
     }
 
     init() {
-        if (!this.input) return;
-        this.input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                const query = this.input.value.trim();
-                if (query.length >= 2) {
-                    window.location.href = `liste-produits.html?cat=electronique&q=${encodeURIComponent(query)}`;
+        if (!this.inputs.length) return;
+        this.inputs.forEach(input => {
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const query = input.value.trim();
+                    if (query.length >= 2) {
+                        window.location.href = `liste-produits.html?search=${encodeURIComponent(query)}`;
+                    }
                 }
+            });
+            // Aussi sur le bouton icône loupe à côté
+            const icon = input.parentElement?.querySelector('.search-icon, button[type="submit"]');
+            if (icon) {
+                icon.style.cursor = 'pointer';
+                icon.addEventListener('click', () => {
+                    const query = input.value.trim();
+                    if (query.length >= 2) {
+                        window.location.href = `liste-produits.html?search=${encodeURIComponent(query)}`;
+                    }
+                });
             }
         });
+
+        // Pré-remplir si on arrive depuis une recherche
+        const searchParam = new URLSearchParams(window.location.search).get('search');
+        if (searchParam) this.inputs.forEach(i => i.value = searchParam);
     }
 }
 
@@ -920,8 +1327,95 @@ class CheckoutManager {
     }
 
     init() {
+        this._promoDiscount = 0;
+        this._promoCode = '';
         this._fillSummary();
         this._setupStepButtons();
+        this._setupPromoCode();
+    }
+
+    _setupPromoCode() {
+        const btn = document.getElementById('apply-promo-btn');
+        if (!btn) return;
+        btn.addEventListener('click', async () => {
+            const code = document.getElementById('promo-input')?.value?.trim();
+            const resultEl = document.getElementById('promo-result');
+            if (!code) return;
+            const token = authManager?.getToken();
+            if (!token) {
+                resultEl.style.display = 'block';
+                resultEl.style.color = '#ef4444';
+                resultEl.textContent = 'Connectez-vous pour utiliser un code promo.';
+                return;
+            }
+            btn.disabled = true;
+            btn.textContent = '...';
+            try {
+                const subtotal = cartManager.getCartTotal();
+                const res = await fetch(API_BASE + '/promos/validate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    body: JSON.stringify({ code, orderTotal: subtotal + CONFIG.SHIPPING_COST })
+                });
+                const data = await res.json();
+                resultEl.style.display = 'block';
+                if (!res.ok) {
+                    resultEl.style.color = '#ef4444';
+                    resultEl.textContent = '✕ ' + data.error;
+                    this._promoDiscount = 0;
+                    this._promoCode = '';
+                } else {
+                    resultEl.style.color = '#22c55e';
+                    resultEl.textContent = `✓ Code appliqué : ${data.description}`;
+                    this._promoDiscount = data.discount;
+                    this._promoCode = data.code;
+                    const discountLine = document.getElementById('promo-discount-line');
+                    const discountEl = document.getElementById('summary-discount');
+                    const totalEl = document.getElementById('summary-total');
+                    if (discountLine) discountLine.style.display = '';
+                    if (discountEl) discountEl.textContent = Utils.formatCurrency(data.discount);
+                    const subtotalVal = cartManager.getCartTotal();
+                    const newTotal = Math.max(0, subtotalVal + CONFIG.SHIPPING_COST - data.discount);
+                    if (totalEl) totalEl.textContent = Utils.formatCurrency(newTotal);
+                }
+            } catch {
+                resultEl.style.display = 'block';
+                resultEl.style.color = '#ef4444';
+                resultEl.textContent = '✕ Erreur réseau';
+            }
+            btn.disabled = false;
+            btn.textContent = 'Appliquer';
+        });
+    }
+
+    async _submitOrder(token, orderData) {
+        const btn = document.querySelector('.confirm-order-btn');
+        if (btn) { btn.disabled = true; btn.textContent = 'Traitement en cours...'; }
+        if (token) {
+            try {
+                const res = await fetch(API_BASE + '/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    body: JSON.stringify({
+                        ...orderData,
+                        promoCode: this._promoCode,
+                        discount: this._promoDiscount
+                    })
+                });
+                if (!res.ok) {
+                    const data = await res.json();
+                    Utils.showNotification(data.error || 'Erreur lors de la commande', 'error');
+                    if (btn) { btn.disabled = false; btn.textContent = 'Confirmer la commande et payer'; }
+                    return;
+                }
+            } catch {
+                Utils.showNotification('Erreur réseau. Réessayez.', 'error');
+                if (btn) { btn.disabled = false; btn.textContent = 'Confirmer la commande et payer'; }
+                return;
+            }
+        }
+        cartManager.clearCart();
+        window.location.href = 'confirmation-commande.html';
     }
 
     _fillSummary() {
@@ -1005,21 +1499,26 @@ class CheckoutManager {
                 const paymentMethod = form.querySelector('input[name="payment_method"]:checked')?.value || '';
                 const deliveryMethod = form.querySelector('input[name="delivery_method"]:checked')?.value || 'delivery';
 
-                if (token) {
-                    try {
-                        await fetch(API_BASE + '/orders', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-                            body: JSON.stringify({
-                                items: cartManager.cart,
-                                deliveryName, deliveryPhone, deliveryAddress, deliveryCity,
-                                paymentMethod, deliveryMethod
-                            })
-                        });
-                    } catch { /* silencieux, la commande continue côté client */ }
+                // Afficher le modal de simulation pour MTN/Airtel
+                if (paymentMethod === 'mtn_mobile_money' || paymentMethod === 'airtel_money') {
+                    const isMTN = paymentMethod === 'mtn_mobile_money';
+                    const total = document.getElementById('summary-total')?.textContent || '';
+                    document.getElementById('modal-logo').textContent = isMTN ? '🟡' : '🔴';
+                    document.getElementById('modal-title').textContent = isMTN ? 'MTN Mobile Money' : 'Airtel Money';
+                    document.getElementById('modal-amount').textContent = total;
+                    document.getElementById('modal-instruction').textContent =
+                        `Un message de confirmation sera envoyé au ${deliveryPhone || 'votre numéro'}. Approuvez le paiement sur votre téléphone.`;
+                    const modal = document.getElementById('payment-modal');
+                    modal.style.display = 'flex';
+                    document.getElementById('modal-cancel-btn').onclick = () => { modal.style.display = 'none'; };
+                    document.getElementById('modal-confirm-btn').onclick = async () => {
+                        modal.style.display = 'none';
+                        await this._submitOrder(token, { items: cartManager.cart, deliveryName, deliveryPhone, deliveryAddress, deliveryCity, paymentMethod, deliveryMethod });
+                    };
+                    return;
                 }
-                cartManager.clearCart();
-                window.location.href = 'confirmation-commande.html';
+
+                await this._submitOrder(token, { items: cartManager.cart, deliveryName, deliveryPhone, deliveryAddress, deliveryCity, paymentMethod, deliveryMethod });
             });
         }
 
@@ -1069,11 +1568,13 @@ function setupNewsletterForms() {
 let cartManager;
 let authManager;
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     cartManager = new CartManager();
     authManager = new AuthManager();
 
     authManager.init();
+    // Synchronise le panier depuis l'API si l'utilisateur est connecté
+    await cartManager.syncFromAPI();
     cartManager.updateCartDisplay();
 
     new MobileNavigation();
