@@ -25,13 +25,18 @@ app.use(helmet({ contentSecurityPolicy: false }));
 const allowedOrigins = [
     'http://localhost:5500',
     'http://127.0.0.1:5500',
-    process.env.FRONTEND_URL
+    process.env.FRONTEND_URL,
+    /\.netlify\.app$/,
+    /\.onrender\.com$/
 ].filter(Boolean);
 
 app.use(cors({
     origin: (origin, callback) => {
-        // Autoriser les requêtes sans origin (ex: Postman, curl)
-        if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+        if (!origin) return callback(null, true);
+        const allowed = allowedOrigins.some(o =>
+            o instanceof RegExp ? o.test(origin) : o === origin
+        );
+        if (allowed) return callback(null, true);
         callback(new Error('CORS bloqué : ' + origin));
     },
     credentials: true
