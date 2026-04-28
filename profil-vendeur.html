@@ -38,33 +38,6 @@
 <body>
     <a href="#main-content" class="skip-link">Aller au contenu principal</a>
 
-    <header class="sticky-header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo-section">
-                    <a href="index.html" class="logo-link" aria-label="Accueil VotreMarché">VotreMarché</a>
-                    <nav class="main-nav" role="navigation" aria-label="Navigation principale">
-                        <a href="categories.html" class="nav-link">Catégories</a>
-                        <a href="aide.html" class="nav-link">Aide</a>
-                    </nav>
-                </div>
-                <div class="header-actions">
-                    <a href="profil-vendeur.html" class="btn btn-primary">Ma Boutique</a>
-                    <a href="deconnexion.html" class="btn btn-danger">Déconnexion</a>
-                </div>
-                <button class="mobile-menu-toggle" aria-expanded="false" aria-controls="mobile-menu">
-                    <i class="fas fa-bars"></i>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <div id="mobile-menu" class="mobile-menu">
-        <div class="mobile-menu-content">
-            <a href="categories.html" class="mobile-nav-link">Catégories</a>
-            <a href="aide.html" class="mobile-nav-link">Aide</a>
-        </div>
-    </div>
 
     <main id="main-content" class="profile-main">
         <div class="container">
@@ -298,17 +271,12 @@
         </div>
     </main>
 
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-bottom">
-                <p>&copy; 2025 VotreMarché. Tous droits réservés.</p>
-            </div>
-        </div>
-    </footer>
-
+    <script src="js/layout.js"></script>
     <script src="js/script.js"></script>
     <script>
-    const API = 'http://localhost:3001/api';
+    const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:3001/api'
+        : 'https://jessyamazon.onrender.com/api';
 
     function getToken() {
         return localStorage.getItem('vm_token') || '';
